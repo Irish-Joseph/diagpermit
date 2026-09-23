@@ -111,10 +111,10 @@ func Build(outPath string, in *Input) (*protocol.DisclosureReceipt, error) {
 		protocol.FileFindings:        findingsBytes,
 	}
 	for name, data := range docFiles {
-		if err := os.MkdirAll(filepath.Dir(filepath.Join(tmp, name)), 0o755); err != nil {
+		if err := os.MkdirAll(filepath.Dir(filepath.Join(tmp, name)), 0o700); err != nil {
 			return nil, err
 		}
-		if err := os.WriteFile(filepath.Join(tmp, name), data, 0o644); err != nil {
+		if err := os.WriteFile(filepath.Join(tmp, name), data, 0o600); err != nil {
 			return nil, err
 		}
 	}
@@ -126,6 +126,7 @@ func Build(outPath string, in *Input) (*protocol.DisclosureReceipt, error) {
 		if err != nil {
 			return err
 		}
+		// #nosec G304 -- path is an internally generated, validated artifact path under tmp.
 		data, err := os.ReadFile(filepath.Join(tmp, path))
 		if err != nil {
 			return err
@@ -160,10 +161,10 @@ func Build(outPath string, in *Input) (*protocol.DisclosureReceipt, error) {
 	// Data files (already transformed by the pipeline).
 	for path, f := range in.Files {
 		dst := filepath.Join(tmp, path)
-		if err := os.MkdirAll(filepath.Dir(dst), 0o755); err != nil {
+		if err := os.MkdirAll(filepath.Dir(dst), 0o700); err != nil {
 			return nil, err
 		}
-		if err := os.WriteFile(dst, f.Content, 0o644); err != nil {
+		if err := os.WriteFile(dst, f.Content, 0o600); err != nil {
 			return nil, err
 		}
 	}
@@ -195,7 +196,7 @@ func Build(outPath string, in *Input) (*protocol.DisclosureReceipt, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err := os.WriteFile(filepath.Join(tmp, protocol.FileManifest), manifestBytes, 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(tmp, protocol.FileManifest), manifestBytes, 0o600); err != nil {
 		return nil, err
 	}
 	manifestHash, err := protocol.HashDocument(manifestBytes)
@@ -237,16 +238,16 @@ func Build(outPath string, in *Input) (*protocol.DisclosureReceipt, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err := os.MkdirAll(filepath.Join(tmp, protocol.DirAttestations), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Join(tmp, protocol.DirAttestations), 0o700); err != nil {
 		return nil, err
 	}
-	if err := os.WriteFile(filepath.Join(tmp, protocol.FileDisclosureReceipt), receiptBytes, 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(tmp, protocol.FileDisclosureReceipt), receiptBytes, 0o600); err != nil {
 		return nil, err
 	}
 
 	// Zip everything.
 	outDir := filepath.Dir(outPath)
-	if err := os.MkdirAll(outDir, 0o755); err != nil {
+	if err := os.MkdirAll(outDir, 0o700); err != nil {
 		return nil, err
 	}
 	tmpOut, err := os.CreateTemp(outDir, ".diagnostic.tmp-")
@@ -264,26 +265,26 @@ func Build(outPath string, in *Input) (*protocol.DisclosureReceipt, error) {
 	for _, p := range allPaths {
 		if _, err := zw.AddFile(p, filepath.Join(tmp, p)); err != nil {
 			_ = zw.Close()
-			os.Remove(tmpOutName)
+			_ = os.Remove(tmpOutName)
 			return nil, err
 		}
 	}
 	if _, err := zw.AddFile(protocol.FileManifest, filepath.Join(tmp, protocol.FileManifest)); err != nil {
 		_ = zw.Close()
-		os.Remove(tmpOutName)
+		_ = os.Remove(tmpOutName)
 		return nil, err
 	}
 	if _, err := zw.AddFile(protocol.FileDisclosureReceipt, filepath.Join(tmp, protocol.FileDisclosureReceipt)); err != nil {
 		_ = zw.Close()
-		os.Remove(tmpOutName)
+		_ = os.Remove(tmpOutName)
 		return nil, err
 	}
 	if err := zw.Finish(); err != nil {
-		os.Remove(tmpOutName)
+		_ = os.Remove(tmpOutName)
 		return nil, err
 	}
 	if err := os.Rename(tmpOutName, outPath); err != nil {
-		os.Remove(tmpOutName)
+		_ = os.Remove(tmpOutName)
 		return nil, err
 	}
 	return receipt, nil
@@ -305,6 +306,7 @@ func sanitizeFilePart(s string) string {
 	var b []byte
 	for _, r := range s {
 		if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') || r == '-' {
+			// #nosec G115 -- the branch above limits r to single-byte ASCII.
 			b = append(b, byte(r))
 		} else if r == ' ' || r == '_' {
 			b = append(b, '-')

@@ -9,6 +9,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"sort"
 	"time"
 
 	"github.com/diagx/diagx/internal/analysis"
@@ -210,6 +211,7 @@ func runTransformations(engine *transform.Engine, files map[string]collection.Co
 	for p := range files {
 		filesList = append(filesList, p)
 	}
+	sort.Strings(filesList)
 	return out, &protocol.TransformationReport{
 		ProtocolVersion:        protocol.ProtocolVersion,
 		RequestID:              req.RequestID(),
@@ -226,12 +228,14 @@ type FailClosedPipelineError struct {
 	transform.FailClosedError
 }
 
+// Unwrap preserves fail-closed error classification across pipeline layers.
+func (e *FailClosedPipelineError) Unwrap() error { return &e.FailClosedError }
+
 // PrintFailClosed renders the spec-mandated fail-closed message.
-func PrintFailClosed(w io.Writer, err error) {
+func PrintFailClosed(w io.Writer, err error) bool {
 	fce, ok := transform.AsFailClosed(err)
 	if !ok {
-		fmt.Fprintln(w, err.Error())
-		return
+		return false
 	}
 	fmt.Fprint(w, `COLLECTION STOPPED SAFELY
 
@@ -247,6 +251,7 @@ Transformer:
 Reason:
 `+fce.Reason+`
 `)
+	return true
 }
 
 // AllCollectors returns all registered collectors for display.

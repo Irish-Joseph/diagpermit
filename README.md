@@ -1,175 +1,200 @@
 # DiagX
 
-> **Know what you're sharing before you send diagnostics.**
+<p align="center">
+  <img src="docs/assets/diagx-workflow-hero.png" alt="A diagnostic request moving through consent, local collection, privacy filtering, integrity packaging, and deliberate sharing" width="100%">
+</p>
 
-DiagX is an open protocol and CLI for consent-driven software diagnostics.
+<p align="center">
+  <strong>Know what you are sharing before you send diagnostics.</strong>
+</p>
 
-A requester declares what troubleshooting information it needs.
+<p align="center">
+  <a href="https://github.com/Irish-Joseph/diagpermit/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Irish-Joseph/diagpermit/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="LICENSE"><img alt="Apache 2.0 license" src="https://img.shields.io/badge/license-Apache--2.0-blue.svg"></a>
+  <img alt="Protocol 0.1" src="https://img.shields.io/badge/protocol-0.1-16a085.svg">
+  <img alt="Go 1.27.1" src="https://img.shields.io/badge/Go-1.27.1-00ADD8.svg?logo=go&logoColor=white">
+</p>
 
-The user reviews and approves those capabilities.
+DiagX is an open protocol and reference CLI for **consent-driven diagnostic exchange**. A support team declares exactly what it needs, the user reviews and approves those capabilities, collection and privacy transformations happen locally, and the resulting artifact records what was requested, approved, collected, and transformed.
 
-Collection and privacy transformations happen locally.
+> [!IMPORTANT]
+> DiagX is an early-stage project and `DiagX` is a development codename. Do not treat the current name, protocol, or CLI as stable. See [TRADEMARKS.md](TRADEMARKS.md) and [ROADMAP.md](ROADMAP.md).
 
-The resulting diagnostic artifact contains a **disclosure receipt**
-describing what was requested, approved, collected and transformed.
+## Why DiagX?
+
+“Send us your logs” is easy to ask and difficult to trust. Users may not know what a support bundle contains, requesters may receive excessive or irrelevant data, and neither side may have a durable record of the disclosure decision.
+
+DiagX makes that boundary explicit:
+
+- requesters declare individual diagnostic capabilities and hard limits;
+- users can approve or deny each capability, including ones marked required;
+- collection stays local and is bounded by filesystem, time, and size policies;
+- configured privacy transformations run before packaging;
+- the artifact includes an integrity manifest and disclosure receipt; and
+- sharing remains a separate, deliberate action outside DiagX.
+
+## How it works
+
+```mermaid
+flowchart LR
+    request[Diagnostic request] --> review[Capability review]
+    review --> consent{User consent}
+    consent -->|Denied| stop[Not collected]
+    consent -->|Approved| collect[Local collection]
+    collect --> transform[Privacy transformations]
+    transform --> package[Diagnostic artifact]
+    package --> verify[Integrity verification]
+    verify --> share[Intentional sharing]
+
+    classDef action fill:#0f766e,color:#fff,stroke:#14b8a6
+    classDef decision fill:#d97706,color:#fff,stroke:#f59e0b
+    classDef neutral fill:#172554,color:#fff,stroke:#38bdf8
+    class request,review,collect,transform,package,verify,share action
+    class consent decision
+    class stop neutral
+```
+
+The `.diagnostic` artifact is a bounded ZIP package containing collected data plus protocol records:
+
+| Record | Purpose |
+| --- | --- |
+| Diagnostic request | Declares purpose, capabilities, policy, expiry, and retention notice |
+| Consent decision | Records how every requested capability was approved or denied |
+| Effective disclosure plan | Freezes what may be collected before collection begins |
+| Collection report | Records per-capability success, failure, denial, timeout, and limits |
+| Transformation report | Records which detectors ran and how many values changed—never the original values |
+| Manifest and receipt | Bind package contents, request, and plan with canonical SHA-256 hashes |
+
+### Real CLI output
+
+These screenshots were captured from the current CLI—not from a design mockup.
+
+**Review the disclosure plan before collection:**
+
+<p align="center">
+  <img src="docs/assets/diagx-plan.png" alt="Real DiagX plan command showing required, optional, and prohibited capabilities" width="100%">
+</p>
+
+**Verify the finished diagnostic artifact:**
+
+<p align="center">
+  <img src="docs/assets/diagx-verify.png" alt="Real DiagX verification command showing successful archive, schema, and hash checks" width="100%">
+</p>
+
+## Quick start
+
+### Requirements
+
+- Go 1.27.1 or newer
+- Linux, macOS, or Windows
+- Docker only if Docker diagnostics or the demo are needed
+
+### Build
 
 ```bash
-diagx plan
-diagx collect
-diagx inspect support.diagnostic
-diagx verify support.diagnostic
+git clone https://github.com/Irish-Joseph/diagpermit.git
+cd diagpermit
+go build -o diagx ./cmd/diagx
+./diagx --version
 ```
 
-**Technical:** an open protocol for consent-driven diagnostic exchange.
+On Windows PowerShell, run the binary as `.\diagx.exe`.
 
-> **Naming note:** `DiagX` is a development codename. Do not register
-> domains, publish packages or create final branding until a proper
-> GitHub/package/domain/trademark search is complete (see
-> [TRADEMARKS.md](TRADEMARKS.md)).
-
----
-
-## What this is (and is not)
-
-DiagX is **not** a log collector, a ZIP creator, a Kubernetes tool, a
-monitoring platform, an APM product, an AI chatbot, a cloud portal, a
-ticketing system, a secrets scanner or a remote-management agent.
-
-Mature collectors already exist. Replicated Troubleshoot provides
-customizable collection, redaction and analysis of Kubernetes diagnostics;
-`sosreport` is an extensible support-data collection system for Linux.
-DiagX does not compete with them on collection alone.
-
-DiagX's position:
-
-> **DiagX aims to provide a vendor-neutral consent and disclosure protocol
-> around diagnostic exchange, including requester-declared capabilities,
-> explicit user decisions, portable disclosure receipts, interoperability
-> and conformance testing.**
-
-Existing diagnostic collectors may eventually become DiagX adapters.
-
-## The workflow
-
-```
-Diagnostic Request
-        ↓
-Capability Review
-        ↓
-User Consent
-        ↓
-Effective Disclosure Plan
-        ↓
-Local Collection
-        ↓
-Privacy Transformations
-        ↓
-Diagnostic Artifact + Disclosure Receipt
-        ↓
-Integrity Verification
-        ↓
-Intentional Sharing   (always a separate, deliberate action)
-```
-
-That workflow is the product.
-
-## Quickstart
+### Create and review a request
 
 ```bash
-# 1. Create a project configuration
-diagx init
-
-# 2. Edit diagx.yaml to declare the capabilities your case needs
-# 3. Validate it
-diagx validate diagx.yaml
-
-# 4. See exactly what would be collected (collects nothing)
-diagx plan
-
-# 5. Collect under explicit consent (local only)
-diagx collect
-
-# 6. Inspect and verify the artifact
-diagx inspect support-CASE-LOCAL.diagnostic
-diagx verify support-CASE-LOCAL.diagnostic
+./diagx init
+./diagx validate diagx.yaml
+./diagx plan
 ```
 
-`diagx collect` only ever creates a local file. There is no mandatory
-DiagX server, no account, no automatic cloud synchronization, no automatic
-upload and no hidden telemetry. Sharing the artifact is always a separate,
-deliberate action outside this tool.
+`plan` is read-only: it shows the requester, purpose, capability requirements, network and shell policy, retention notice, and collection limits without collecting data.
 
-See [docs/quickstart.md](docs/quickstart.md) for a walkthrough.
+### Collect, inspect, and verify
 
-## Privacy: what the tools do and do not claim
+```bash
+./diagx collect
+./diagx inspect support-CASE-LOCAL.diagnostic
+./diagx verify support-CASE-LOCAL.diagnostic
+```
 
-DiagX applies configured pattern detectors and transformations locally and
-**records which configured detectors and transformations executed
-successfully.** It records counts, never the original values.
+For automation, consent must still be explicit:
 
-It does **not** guarantee that all secrets are removed. No general secret
-detector can make that guarantee. **Users should review diagnostic content
-before sharing it.** `diagx verify` proves integrity — that the package has
-not changed according to the verification model — and never claims a
-privacy guarantee.
+```bash
+./diagx collect --yes
+./diagx collect --consent consent.json
+```
 
-If a mandatory privacy transformation fails, DiagX **fails closed**:
-collection stops safely and no shareable artifact is produced.
+See the [full quick start](docs/quickstart.md) and [broken demo application](examples/broken-demo-app/README.md) for an end-to-end scenario.
 
 ## Commands
 
-| Command | Purpose |
+| Command | What it does |
 | --- | --- |
-| `diagx init` | Create `diagx.yaml` project configuration |
-| `diagx validate [file]` | Validate a request/project schema |
-| `diagx plan` | Show exactly what would happen, without collecting |
-| `diagx collect` | request → consent → plan → collection → transformation → package |
-| `diagx inspect <artifact>` | Terminal-friendly summary of an artifact |
-| `diagx verify <artifact>` | Check integrity and schemas |
-| `diagx redact-test [file]` | See transformation behaviour safely |
-| `diagx collectors` | List collectors and declared capabilities |
-| `diagx doctor` | Check the health of this DiagX installation |
+| `diagx init` | Creates a documented `diagx.yaml` request template |
+| `diagx validate [file]` | Strictly validates configuration and rejects unknown fields |
+| `diagx plan` | Previews requested capabilities and limits without collection |
+| `diagx collect` | Runs consent → collection → transformation → packaging |
+| `diagx inspect <artifact>` | Displays a terminal-friendly artifact summary |
+| `diagx verify <artifact>` | Verifies archive structure, hashes, schemas, and receipt links |
+| `diagx redact-test [file]` | Previews privacy transformations on local input |
+| `diagx collectors` | Lists built-in collectors and declared capabilities |
+| `diagx doctor` | Checks the local CLI environment |
 
-## Repository layout
+## Security and privacy model
 
+DiagX is local-first by design:
+
+- no account, mandatory server, hidden telemetry, or automatic upload;
+- network access is disabled unless the request and effective plan allow it;
+- arbitrary shell execution is rejected in protocol 0.1;
+- file reads are bounded to an allowed root and reject symlinks by default;
+- archives reject traversal paths, duplicate entries, excessive entries, and decompression limits;
+- mandatory transformation failures stop the pipeline without producing a shareable artifact; and
+- verification checks integrity, not privacy completeness.
+
+> [!WARNING]
+> Pattern-based transformations cannot guarantee that every secret or personal value has been removed. Always inspect diagnostic content before sharing it. `diagx verify` proves package integrity according to the verification model; it does **not** prove that the package is safe to disclose.
+
+Read the [security model](docs/security.md), [threat model](docs/threat-model.md), and [vulnerability reporting policy](SECURITY.md).
+
+## Architecture
+
+```text
+cmd/diagx/          CLI commands
+collectors/         Typed system, runtime, application, and Docker collectors
+internal/           Consent, collection, transformation, packaging, and verification
+pkg/protocol/       Public protocol types and canonical JSON hashing
+spec/               JSON schemas, RFCs, and protocol examples
+conformance/        Portable protocol test vectors
+testdata/           Synthetic secret corpus—never real user data
+examples/           Demonstration applications
+docs/               Guides, design notes, security docs, and README assets
 ```
-cmd/            CLI
-internal/       consent, collection, transform, packaging, verification, ...
-pkg/protocol/   canonical protocol types
-collectors/     system, runtime, application, docker
-spec/           JSON schemas, examples, RFCs
-conformance/    conformance test vectors
-testdata/       synthetic secret test corpus
-examples/       broken demo application (DiagShop)
-docs/           quickstart, protocol overview, threat model, security
-```
 
-## Building
+The package boundaries intentionally keep the public protocol model small while implementation details remain under `internal/`. See the [protocol overview](docs/protocol-overview.md) and [documentation index](docs/README.md).
 
-Requires Go 1.22+.
+## Development
 
 ```bash
-go build -o diagx ./cmd/diagx
-go test ./...
-go test ./conformance/   # conformance suite
+go test -count=1 ./...
+go test -count=1 -v ./conformance/
+go vet ./...
+gofmt -l .
 ```
 
-## Security
+CI runs build, formatting, vet, tests, conformance, security-oriented linting, and CodeQL across Linux, Windows, and macOS where applicable.
 
-Read [SECURITY.md](SECURITY.md) and [docs/threat-model.md](docs/threat-model.md).
-Report vulnerabilities privately; do not open public issues for security
-problems.
+## Project scope
 
-## Roadmap
+DiagX is not an observability platform, monitoring agent, ticketing system, remote-management tool, cloud support portal, or replacement for mature collectors such as `sosreport`. Its focus is the consent, disclosure, and integrity boundary around diagnostic exchange. Existing collectors can become adapters in later versions.
 
-See [ROADMAP.md](ROADMAP.md). V0.1 is the protocol + reference CLI +
-conformance. V0.2 adds the local viewer, signed requests and the first
-existing-tool adapter. AI, cloud features, plugin marketplaces and
-dashboards are explicitly out of scope for V0.1.
+## Contributing
+
+The project is open for review and early contributions. Start with [CONTRIBUTING.md](CONTRIBUTING.md), follow the [Code of Conduct](CODE_OF_CONDUCT.md), and use the RFC process for protocol changes. Never submit real credentials, customer logs, or employer data.
+
+Security vulnerabilities must be reported privately as described in [SECURITY.md](SECURITY.md).
 
 ## License
 
-Apache License 2.0 — see [LICENSE](LICENSE).
-
-Contributions are governed by [CONTRIBUTING.md](CONTRIBUTING.md),
-[GOVERNANCE.md](GOVERNANCE.md) and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+Licensed under the [Apache License 2.0](LICENSE).

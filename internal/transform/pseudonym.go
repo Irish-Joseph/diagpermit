@@ -43,6 +43,9 @@ func (p *PseudoMap) For(poolKey string) (string, bool) {
 
 func (p *PseudoMap) forPool(poolKey string) (string, bool) {
 	i := lastIndexByte(poolKey, '|')
+	if i <= 0 || i == len(poolKey)-1 {
+		return "", false
+	}
 	pool, value := poolKey[:i], poolKey[i+1:]
 	m, ok := p.maps[pool]
 	if !ok {

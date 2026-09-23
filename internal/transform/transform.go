@@ -194,13 +194,15 @@ type Engine struct {
 // NewEngine builds an engine for the given ruleset. salt must be a fresh
 // random per-artifact value (16+ bytes recommended).
 func NewEngine(ruleset Ruleset, salt []byte) (*Engine, error) {
+	if len(salt) == 0 {
+		return nil, fmt.Errorf("ruleset: pseudonymization salt must not be empty")
+	}
 	e := &Engine{
 		ruleset: ruleset,
-		det:     defaultDetectors(),
 		pseudo:  NewPseudoMap(salt),
 		counts:  make(map[string]int),
 	}
-	currentPseudo = e.pseudo
+	e.det = defaultDetectors(e.pseudo)
 	for i, rule := range ruleset.Rules {
 		if !rule.Action.Valid() {
 			return nil, fmt.Errorf("ruleset: rule %d (%s): invalid action %q", i, rule.Detector, rule.Action)
@@ -249,26 +251,27 @@ func NewEngine(ruleset Ruleset, salt []byte) (*Engine, error) {
 func (e *Engine) genericActionFn(rule Rule, valueGroup int) subFn {
 	return func(full string, groups []string) string {
 		val := full
+		if valueGroup > 0 {
+			groupIndex := valueGroup - 1
+			if groupIndex < len(groups) && groups[groupIndex] != "" {
+				val = groups[groupIndex]
+			}
+		}
 		switch rule.Action {
 		case ActionDrop:
 			return ""
 		case ActionReplace:
 			return rule.ReplaceWith
 		case ActionTruncate:
-			if len(val) <= rule.TruncateTo {
+			runes := []rune(val)
+			if len(runes) <= rule.TruncateTo {
 				return val
 			}
-			return val[:rule.TruncateTo] + "...[truncated]"
+			return string(runes[:rule.TruncateTo]) + "...[truncated]"
 		case ActionHash:
-			if valueGroup < len(groups) && groups[valueGroup] != "" {
-				val = groups[valueGroup]
-			}
 			sum := sha256.Sum256([]byte(val))
 			return "sha256:" + hex.EncodeToString(sum[:])[:12]
 		case ActionPseudonymize:
-			if valueGroup < len(groups) && groups[valueGroup] != "" {
-				val = groups[valueGroup]
-			}
 			label, _ := e.pseudo.For(rule.Detector + "|" + val)
 			return label
 		case ActionMask:
@@ -327,15 +330,14 @@ func (e *Engine) Apply(content []byte) ([]byte, []DetectorReport, error) {
 	return []byte(out), report, nil
 }
 
-func (e *Engine) applyRule(d *Detector, s string) (string, int, error) {
-	var err error
+func (e *Engine) applyRule(d *Detector, s string) (out string, n int, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("panic during %s: %v", d.ID, r)
 		}
 	}()
-	out, n := subAll(d.Re, s, d.fn)
-	return out, n, err
+	out, n = subAll(d.Re, s, d.fn)
+	return out, n, nil
 }
 
 // TotalTransformations returns the cumulative transformation count across

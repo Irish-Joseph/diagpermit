@@ -225,6 +225,35 @@ func TestStablePseudonymization(t *testing.T) {
 	}
 }
 
+func TestEnginesKeepIndependentPseudonymState(t *testing.T) {
+	e1 := newTestEngine(t)
+	first, _, err := e1.Apply([]byte("192.168.1.20"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(first) != "host-a" {
+		t.Fatalf("first engine: got %q", first)
+	}
+
+	e2 := newTestEngine(t)
+	if _, _, err := e2.Apply([]byte("10.0.0.5")); err != nil {
+		t.Fatal(err)
+	}
+	repeated, _, err := e1.Apply([]byte("192.168.1.20"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(repeated) != "host-a" {
+		t.Fatalf("engine state leaked between instances: got %q", repeated)
+	}
+}
+
+func TestNewEngineRejectsEmptySalt(t *testing.T) {
+	if _, err := NewEngine(DefaultRuleset(), nil); err == nil {
+		t.Fatal("empty pseudonymization salt must return an error")
+	}
+}
+
 // TestFailClosedCustomPattern guarantees an unparseable user pattern
 // aborts engine construction (fail closed at configuration time).
 func TestFailClosedCustomPattern(t *testing.T) {
@@ -260,5 +289,29 @@ func TestCustomDetectorApplied(t *testing.T) {
 	}
 	if string(out) != "order *** shipped" {
 		t.Errorf("unexpected: %s", out)
+	}
+}
+
+func TestCustomDetectorUsesFirstCaptureGroup(t *testing.T) {
+	rs := Ruleset{ID: "test", Rules: []Rule{{
+		Detector: "custom:credential",
+		Pattern:  `(?:token|key)=(SECRET)`,
+		Action:   ActionHash,
+		Required: true,
+	}}}
+	e, err := NewEngine(rs, []byte("salt"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	a, _, err := e.Apply([]byte("token=SECRET"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	b, _, err := e.Apply([]byte("key=SECRET"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(a) != string(b) {
+		t.Fatalf("same captured secret must hash identically: %q != %q", a, b)
 	}
 }

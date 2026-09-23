@@ -27,7 +27,7 @@ func TestValidatePathTraversal(t *testing.T) {
 	if _, err := ValidatePath(filepath.Join(dir, "..", "x", "ok.log"), Options{Root: dir}); err == nil {
 		t.Fatal("path traversal must be rejected")
 	}
-	if _, err := ValidatePath("/etc/passwd", Options{Root: dir}); err == nil {
+	if _, err := ValidatePath(filepath.Join(outside, "secret.log"), Options{Root: dir}); err == nil {
 		t.Fatal("absolute escape must be rejected")
 	}
 	p, err := ValidatePath(filepath.Join(dir, "ok.log"), Options{Root: dir})
@@ -68,6 +68,20 @@ func TestTailBounds(t *testing.T) {
 	}
 	if len(data) > 32 {
 		t.Fatalf("max bytes exceeded: %d", len(data))
+	}
+}
+
+func TestTailCountsLinesWithTrailingNewline(t *testing.T) {
+	dir := t.TempDir()
+	p := filepath.Join(dir, "trailing.log")
+	writeFile(t, p, "one\ntwo\nthree\nfour\n")
+
+	data, err := Tail(p, Options{Root: dir, MaxLines: 2, MaxBytes: 1024})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := string(data), "three\nfour\n"; got != want {
+		t.Fatalf("got %q, want %q", got, want)
 	}
 }
 

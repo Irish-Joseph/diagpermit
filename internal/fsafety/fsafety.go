@@ -47,16 +47,16 @@ func ValidatePath(p string, opts Options) (string, error) {
 		}
 	}
 	if !opts.FollowSymlinks {
-		p := abs
-		for {
+		// Root is the trusted boundary. Check the target and every path
+		// component below it, but do not reject platform-level symlinks
+		// above the root (for example /var -> /private/var on macOS).
+		for p := abs; p != rootAbs; p = filepath.Dir(p) {
 			if l, err := os.Lstat(p); err == nil && l.Mode()&os.ModeSymlink != 0 {
 				return "", fmt.Errorf("%s is a symlink; symlink following is disabled", p)
 			}
-			dp := filepath.Dir(p)
-			if dp == p {
+			if filepath.Dir(p) == p {
 				break
 			}
-			p = dp
 		}
 	}
 	info, err := os.Stat(abs)
@@ -79,6 +79,7 @@ func Tail(path string, opts Options) ([]byte, error) {
 	if opts.MaxBytes <= 0 {
 		opts.MaxBytes = 1 << 20 // hard default cap: 1 MiB
 	}
+	// #nosec G304 -- abs was confined to Root and checked for symlinks above.
 	f, err := os.Open(abs)
 	if err != nil {
 		return nil, err
@@ -102,11 +103,20 @@ func Tail(path string, opts Options) ([]byte, error) {
 		data = data[int(int64(len(data))-opts.MaxBytes):]
 	}
 	if opts.MaxLines > 0 {
-		lines := strings.Split(string(data), "\n")
+		text := string(data)
+		trailingNewline := strings.HasSuffix(text, "\n")
+		if trailingNewline {
+			text = strings.TrimSuffix(text, "\n")
+		}
+		lines := strings.Split(text, "\n")
 		if len(lines) > opts.MaxLines {
 			lines = lines[len(lines)-opts.MaxLines:]
 		}
-		data = []byte(strings.Join(lines, "\n"))
+		text = strings.Join(lines, "\n")
+		if trailingNewline {
+			text += "\n"
+		}
+		data = []byte(text)
 	}
 	return data, nil
 }

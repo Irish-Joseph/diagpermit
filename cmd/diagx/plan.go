@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"time"
 
@@ -39,6 +40,7 @@ func consentMode(cmd *cobra.Command, req *protocol.DiagnosticRequest) (string, *
 		}
 	}
 	if flagConsent != "" {
+		// #nosec G304 -- flagConsent is explicitly selected by the local CLI user.
 		data, err := os.ReadFile(flagConsent)
 		if err != nil {
 			return "", nil, nil, fmt.Errorf("consent file: %w", err)
@@ -74,14 +76,13 @@ var planCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		printPlan(req)
+		printPlan(cmd.OutOrStdout(), req)
 		fmt.Fprintln(cmd.OutOrStdout(), "\nPlan only. No data was collected and no artifact was created.")
 		return nil
 	},
 }
 
-func printPlan(req *protocol.DiagnosticRequest) {
-	w := cmdOut()
+func printPlan(w io.Writer, req *protocol.DiagnosticRequest) {
 	section(w, "Diagnostic request")
 	fmt.Fprintf(w, "Request ID:  %s\n", req.Request.ID)
 	fmt.Fprintf(w, "Requester:   %s", req.Requester.Name)
@@ -144,10 +145,8 @@ func humanBytes(n int64) string {
 		div *= unit
 		exp++
 	}
-	return fmt.Sprintf("%.0f %cB", float64(n)/float64(div), "KMGTPE"[exp])
+	return fmt.Sprintf("%.0f %ciB", float64(n)/float64(div), "KMGTPE"[exp])
 }
-
-func cmdOut() *os.File { return os.Stdout }
 
 func init() {
 	addCommonFlags(planCmd)

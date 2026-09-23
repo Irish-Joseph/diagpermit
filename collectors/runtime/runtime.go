@@ -99,6 +99,7 @@ func (c *Collector) Collect(cc *collection.Context) collection.Result {
 
 	ctx, cancel := context.WithTimeout(cc.Ctx, 10*time.Second)
 	defer cancel()
+	// #nosec G204 -- bin and args come only from the fixed probes table above.
 	cmd := exec.CommandContext(ctx, bin, p.args...)
 	var out strings.Builder
 	cmd.Stdout = &out
