@@ -9,16 +9,16 @@ Semantic Versioning.
 
 ### Added
 
-- DiagX protocol 0.1: DiagnosticRequest, Capability, ConsentDecision,
+- DiagPermit protocol 0.1: DiagnosticRequest, Capability, ConsentDecision,
   EffectiveDisclosurePlan, CollectorResult, TransformationReport, Manifest,
   DisclosureReceipt and Finding schemas (`spec/schemas/`).
 - Canonical JSON + SHA-256 document hashing (`pkg/protocol`).
-- CLI: `diagx init`, `validate`, `plan`, `collect`, `inspect`, `verify`,
+- CLI: `diagpermit init`, `validate`, `plan`, `collect`, `inspect`, `verify`,
   `redact-test`, `collectors`, `doctor`.
 - Collectors: system (os/memory/disk), runtime (python/node/java/go
   versions), application logs (bounded tail), basic Docker (version,
   container states/images/health — no environment variables).
-- Privacy transformation engine `diagx-default-0.1`: drop, mask, replace,
+- Privacy transformation engine `diagpermit-default-0.1`: drop, mask, replace,
   truncate, hash, pseudonymize; stable per-artifact pseudonyms; fail-closed
   behaviour; transformation reports that never contain original values.
 - ZIP-backed `.diagnostic` artifacts with SHA-256 manifest and disclosure

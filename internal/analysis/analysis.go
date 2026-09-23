@@ -8,7 +8,7 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/diagx/diagx/pkg/protocol"
+	"github.com/Irish-Joseph/diagpermit/pkg/protocol"
 )
 
 // Analyze inspects the collected data files and returns findings.

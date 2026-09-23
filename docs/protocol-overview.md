@@ -1,6 +1,6 @@
 # Protocol Overview
 
-DiagX protocol version 0.1 defines one artifact chain with six documents.
+DiagPermit protocol version 0.1 defines one artifact chain with six documents.
 
 ## Documents
 
@@ -37,12 +37,12 @@ unknown protocol versions. See the RFCs in `spec/rfcs/` for change rules.
 ## Local-first
 
 V0.1 requires: no mandatory server, no account, no automatic cloud
-synchronization, no automatic upload, no hidden telemetry. `diagx collect`
+synchronization, no automatic upload, no hidden telemetry. `diagpermit collect`
 only creates a local artifact.
 
 ## What integrity verification covers
 
-`diagx verify` checks: schema validity, manifest consistency, artifact
+`diagpermit verify` checks: schema validity, manifest consistency, artifact
 hashes, disclosure-plan hash, request hash, archive structure and (later)
 optional signatures. It distinguishes **INTEGRITY VERIFIED** from a privacy
 guarantee — which it never makes.

@@ -12,12 +12,12 @@ import (
 	"sort"
 	"time"
 
-	"github.com/diagx/diagx/internal/analysis"
-	"github.com/diagx/diagx/internal/collection"
-	"github.com/diagx/diagx/internal/consent"
-	"github.com/diagx/diagx/internal/packaging"
-	"github.com/diagx/diagx/internal/transform"
-	"github.com/diagx/diagx/pkg/protocol"
+	"github.com/Irish-Joseph/diagpermit/internal/analysis"
+	"github.com/Irish-Joseph/diagpermit/internal/collection"
+	"github.com/Irish-Joseph/diagpermit/internal/consent"
+	"github.com/Irish-Joseph/diagpermit/internal/packaging"
+	"github.com/Irish-Joseph/diagpermit/internal/transform"
+	"github.com/Irish-Joseph/diagpermit/pkg/protocol"
 )
 
 // Output carries the results of a run.

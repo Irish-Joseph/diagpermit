@@ -11,12 +11,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/diagx/diagx/internal/collection"
-	"github.com/diagx/diagx/internal/consent"
-	"github.com/diagx/diagx/internal/safezip"
-	"github.com/diagx/diagx/internal/transform"
-	"github.com/diagx/diagx/internal/verification"
-	"github.com/diagx/diagx/pkg/protocol"
+	"github.com/Irish-Joseph/diagpermit/internal/collection"
+	"github.com/Irish-Joseph/diagpermit/internal/consent"
+	"github.com/Irish-Joseph/diagpermit/internal/safezip"
+	"github.com/Irish-Joseph/diagpermit/internal/transform"
+	"github.com/Irish-Joseph/diagpermit/internal/verification"
+	"github.com/Irish-Joseph/diagpermit/pkg/protocol"
 )
 
 // --- fakes ---------------------------------------------------------------

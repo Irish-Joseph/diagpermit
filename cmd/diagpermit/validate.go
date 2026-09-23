@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/diagx/diagx/internal/config"
+	"github.com/Irish-Joseph/diagpermit/internal/config"
 )
 
 var validateCmd = &cobra.Command{
@@ -22,7 +22,7 @@ var validateCmd = &cobra.Command{
 			return err
 		}
 		w := cmd.OutOrStdout()
-		fmt.Fprintf(w, "%s is a valid DiagX %s request\n", path, req.ProtocolVersion)
+		fmt.Fprintf(w, "%s is a valid DiagPermit %s request\n", path, req.ProtocolVersion)
 		fmt.Fprintf(w, "  request:     %s\n", req.Request.ID)
 		fmt.Fprintf(w, "  requester:   %s\n", req.Requester.Name)
 		fmt.Fprintf(w, "  purpose:     %s\n", req.Purpose.Description)

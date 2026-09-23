@@ -6,8 +6,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/diagx/diagx/internal/pipeline"
-	"github.com/diagx/diagx/internal/transform"
+	"github.com/Irish-Joseph/diagpermit/internal/pipeline"
+	"github.com/Irish-Joseph/diagpermit/internal/transform"
 )
 
 var redactTestCmd = &cobra.Command{

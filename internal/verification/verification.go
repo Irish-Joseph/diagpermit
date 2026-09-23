@@ -1,4 +1,4 @@
-// Package verification implements `diagx verify` (spec section 11):
+// Package verification implements `diagpermit verify` (spec section 11):
 //
 //	schema validity, manifest consistency, artifact hashes, disclosure-plan
 //	hash, request hash and archive structure.
@@ -14,8 +14,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/diagx/diagx/internal/safezip"
-	"github.com/diagx/diagx/pkg/protocol"
+	"github.com/Irish-Joseph/diagpermit/internal/safezip"
+	"github.com/Irish-Joseph/diagpermit/pkg/protocol"
 )
 
 // Check is one verification result line.

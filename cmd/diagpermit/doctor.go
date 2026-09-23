@@ -7,16 +7,16 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/diagx/diagx/internal/config"
-	"github.com/diagx/diagx/pkg/protocol"
+	"github.com/Irish-Joseph/diagpermit/internal/config"
+	"github.com/Irish-Joseph/diagpermit/pkg/protocol"
 )
 
 var doctorCmd = &cobra.Command{
 	Use:   "doctor",
-	Short: "Check the health of this DiagX installation",
+	Short: "Check the health of this DiagPermit installation",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		w := cmd.OutOrStdout()
-		section(w, "DiagX doctor")
+		section(w, "DiagPermit doctor")
 		ok := true
 		check := func(name, detail string, good bool) {
 			mark := "ok  "
@@ -38,9 +38,9 @@ var doctorCmd = &cobra.Command{
 		check("telemetry", "OFF (no telemetry in V0.1)", true)
 
 		if _, err := config.Load(config.DefaultFile); err != nil {
-			check("request file", "diagx.yaml not found or invalid — run `diagx init`", false)
+			check("request file", "diagpermit.yaml not found or invalid — run `diagpermit init`", false)
 		} else {
-			check("request file", "diagx.yaml valid", true)
+			check("request file", "diagpermit.yaml valid", true)
 		}
 
 		for _, b := range []string{"python3", "python", "node", "java", "go", "docker"} {
@@ -50,7 +50,7 @@ var doctorCmd = &cobra.Command{
 		}
 		fmt.Fprintln(w)
 		if ok {
-			fmt.Fprintln(w, "DiagX is ready.")
+			fmt.Fprintln(w, "DiagPermit is ready.")
 		} else {
 			fmt.Fprintln(w, "Fix the warnings above, or ignore optional ones (e.g. absent runtimes).")
 		}

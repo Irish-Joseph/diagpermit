@@ -7,8 +7,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/diagx/diagx/internal/safezip"
-	"github.com/diagx/diagx/pkg/protocol"
+	"github.com/Irish-Joseph/diagpermit/internal/safezip"
+	"github.com/Irish-Joseph/diagpermit/pkg/protocol"
 )
 
 var inspectCmd = &cobra.Command{
@@ -132,7 +132,7 @@ var inspectCmd = &cobra.Command{
 		fmt.Fprintf(w, "Request hash:         %s\n", receipt.Request.Hash)
 		fmt.Fprintf(w, "Disclosure plan hash: %s\n", receipt.DisclosurePlanHash)
 		fmt.Fprintf(w, "Manifest hash:        %s\n", receipt.Artifact.ManifestHash)
-		fmt.Fprintln(w, "\nRun `diagx verify "+path+"` to check integrity.")
+		fmt.Fprintln(w, "\nRun `diagpermit verify "+path+"` to check integrity.")
 		return nil
 	},
 }

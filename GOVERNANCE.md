@@ -1,6 +1,6 @@
 # Governance
 
-DiagX is a community-governed, Apache-2.0 open-source project.
+DiagPermit is a community-governed, Apache-2.0 open-source project.
 
 ## Roles
 

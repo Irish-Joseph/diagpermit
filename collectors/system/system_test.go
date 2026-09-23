@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/diagx/diagx/internal/collection"
-	"github.com/diagx/diagx/pkg/protocol"
+	"github.com/Irish-Joseph/diagpermit/internal/collection"
+	"github.com/Irish-Joseph/diagpermit/pkg/protocol"
 )
 
 func TestCapabilitiesCollectOnlyTheirOwnData(t *testing.T) {

@@ -1,6 +1,6 @@
 # Trademarks
 
-**Status: draft policy — `DiagX` is a development codename.**
+**Status: draft policy.**
 
 No domains, packages or final branding are registered or asserted under
 this name yet. A proper GitHub/package/domain/trademark search must be
@@ -12,13 +12,13 @@ project becomes commercially significant.
 The code will be open source (Apache-2.0) while the official name and logo
 remain governed by this policy. The goal is to allow:
 
-- "Fork of DiagX"
-- "Compatible with DiagX"
-- "Uses the DiagX protocol"
+- "Fork of DiagPermit"
+- "Compatible with DiagPermit"
+- "Uses the DiagPermit protocol"
 
 while preventing misleading claims such as:
 
-- "Official DiagX Enterprise Edition" (by an unrelated company)
+- "Official DiagPermit Enterprise Edition" (by an unrelated company)
 - implying official endorsement, certification or support where none
   exists
 
@@ -29,7 +29,7 @@ while preventing misleading claims such as:
 2. Third parties must not use the name in a way that suggests official
    endorsement, or imply that a product is "official" or "certified".
 3. Third-party names must be clearly distinguished (e.g. "Foo, compatible
-   with the DiagX protocol").
+   with the DiagPermit protocol").
 4. Forks that significantly diverge from the protocol should adopt a new
    name.
 5. Conformance: implementations running the published conformance suite may

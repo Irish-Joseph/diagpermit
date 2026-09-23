@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/diagx/diagx/internal/collection"
-	"github.com/diagx/diagx/internal/pipeline"
+	"github.com/Irish-Joseph/diagpermit/internal/collection"
+	"github.com/Irish-Joseph/diagpermit/internal/pipeline"
 )
 
 // setRegistryForTest swaps the collector registry for the duration of a

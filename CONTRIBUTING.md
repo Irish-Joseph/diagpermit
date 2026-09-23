@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping improve DiagX. This project is in early development and
+Thanks for helping improve DiagPermit. This project is in early development and
 contributions are welcome.
 
 ## Ground rules
@@ -18,7 +18,7 @@ contributions are welcome.
 ## Development
 
 ```bash
-go build -o diagx ./cmd/diagx   # build
+go build -o diagpermit ./cmd/diagpermit   # build
 go test ./...                    # unit + integration tests
 go test ./conformance/           # conformance suite
 go vet ./...

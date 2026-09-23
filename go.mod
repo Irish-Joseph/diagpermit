@@ -1,4 +1,4 @@
-module github.com/diagx/diagx
+module github.com/Irish-Joseph/diagpermit
 
 go 1.27.1
 

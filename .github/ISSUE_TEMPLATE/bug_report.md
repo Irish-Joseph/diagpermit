@@ -16,10 +16,10 @@ Exact commands and minimal input that reproduce the problem.
 What you expected to happen.
 
 **Environment**
-- `diagx doctor` output:
+- `diagpermit doctor` output:
 - OS / architecture:
-- How DiagX was installed (built from source? release binary?):
+- How DiagPermit was installed (built from source? release binary?):
 
 **Artifact**
-If relevant, the output of `diagx verify <artifact>` (never upload the
+If relevant, the output of `diagpermit verify <artifact>` (never upload the
 artifact itself to a public issue unless it contains only synthetic data).

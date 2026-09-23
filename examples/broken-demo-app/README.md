@@ -1,4 +1,4 @@
-# DiagShop — broken demo app for DiagX
+# DiagShop — broken demo app for DiagPermit
 
 A deliberately broken reference application: a small API that cannot reach
 its database because the database container is stopped.
@@ -41,13 +41,13 @@ mkdir -p logs
 docker logs diagshop-api > logs/app.log
 ```
 
-Then run DiagX with the provided request:
+Then run DiagPermit with the provided request:
 
 ```bash
-diagx plan
-diagx collect --yes
-diagx inspect support-DIAGSHOP-1.diagnostic
-diagx verify support-DIAGSHOP-1.diagnostic
+diagpermit plan
+diagpermit collect --yes
+diagpermit inspect support-DIAGSHOP-1.diagnostic
+diagpermit verify support-DIAGSHOP-1.diagnostic
 ```
 
 The artifact should contain:

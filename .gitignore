@@ -1,6 +1,6 @@
 # Build artifacts
-/diagx
-/diagx.exe
+/diagpermit
+/diagpermit.exe
 *.exe
 dist/
 

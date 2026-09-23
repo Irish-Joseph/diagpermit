@@ -9,9 +9,9 @@ import (
 	"path"
 	"time"
 
-	"github.com/diagx/diagx/internal/collection"
-	"github.com/diagx/diagx/internal/fsafety"
-	"github.com/diagx/diagx/pkg/protocol"
+	"github.com/Irish-Joseph/diagpermit/internal/collection"
+	"github.com/Irish-Joseph/diagpermit/internal/fsafety"
+	"github.com/Irish-Joseph/diagpermit/pkg/protocol"
 )
 
 // CollectorID is the stable collector identifier.

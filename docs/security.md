@@ -1,6 +1,6 @@
 # Security
 
-DiagX is a privacy- and security-sensitive project. We take our own supply
+DiagPermit is a privacy- and security-sensitive project. We take our own supply
 chain seriously because a diagnostic-security tool that is itself
 insecure would be worse than useless.
 
@@ -42,7 +42,7 @@ Scorecard improvement and the OpenSSF Best Practices Badge from the start.
 
 ## Privacy wording policy
 
-Documentation MUST NOT say "DiagX guarantees that all secrets are removed."
-Use: "DiagX records which configured detectors and transformations executed
+Documentation MUST NOT say "DiagPermit guarantees that all secrets are removed."
+Use: "DiagPermit records which configured detectors and transformations executed
 successfully" and "Users should review diagnostic content before sharing
 it." Integrity verification is never presented as a privacy guarantee.

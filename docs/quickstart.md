@@ -5,7 +5,7 @@
 Build from source (Go 1.27.1+):
 
 ```bash
-go build -o diagx ./cmd/diagx
+go build -o diagpermit ./cmd/diagpermit
 ```
 
 Or download a release binary (with published checksums) from the releases
@@ -14,10 +14,10 @@ page.
 ## 2. Initialize
 
 ```bash
-diagx init
+diagpermit init
 ```
 
-Creates `diagx.yaml`. Edit it to declare exactly which capabilities your
+Creates `diagpermit.yaml`. Edit it to declare exactly which capabilities your
 support case needs:
 
 ```yaml
@@ -63,13 +63,13 @@ local:
 Validate:
 
 ```bash
-diagx validate diagx.yaml
+diagpermit validate diagpermit.yaml
 ```
 
 ## 3. Plan
 
 ```bash
-diagx plan
+diagpermit plan
 ```
 
 Shows every capability by requirement state, the network/shell switches and
@@ -78,7 +78,7 @@ the limits — without collecting anything.
 ## 4. Collect
 
 ```bash
-diagx collect
+diagpermit collect
 ```
 
 You are shown the request and asked to approve each optional capability.
@@ -88,8 +88,8 @@ and a warning is stored in the artifact.
 Non-interactive:
 
 ```bash
-diagx collect --yes                              # approve all non-forbidden
-diagx collect --consent consent.json             # {"approved":[...],"denied":[...]}
+diagpermit collect --yes                              # approve all non-forbidden
+diagpermit collect --consent consent.json             # {"approved":[...],"denied":[...]}
 ```
 
 Only approved capabilities are collected, locally, under the request's
@@ -98,8 +98,8 @@ limits. Privacy transformations run before anything is packaged.
 ## 5. Inspect and verify
 
 ```bash
-diagx inspect support-CASE-82341.diagnostic
-diagx verify support-CASE-82341.diagnostic
+diagpermit inspect support-CASE-82341.diagnostic
+diagpermit verify support-CASE-82341.diagnostic
 ```
 
 `verify` recomputes every manifest hash, the request hash, the
@@ -115,8 +115,8 @@ docker compose up -d
 docker compose stop database
 mkdir -p logs
 docker logs diagshop-api > logs/app.log
-diagx plan && diagx collect --yes
-diagx inspect support-*.diagnostic
+diagpermit plan && diagpermit collect --yes
+diagpermit inspect support-*.diagnostic
 ```
 
 The artifact should contain a `DATABASE_CONNECTIVITY_FAILURE` finding.

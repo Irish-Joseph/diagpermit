@@ -11,8 +11,8 @@ import (
 	"sort"
 	"time"
 
-	"github.com/diagx/diagx/internal/transform"
-	"github.com/diagx/diagx/pkg/protocol"
+	"github.com/Irish-Joseph/diagpermit/internal/transform"
+	"github.com/Irish-Joseph/diagpermit/pkg/protocol"
 )
 
 // CollectorVersion is the shared V0.1 collector implementation version.
@@ -30,7 +30,7 @@ type DeclaredCapability struct {
 	Sensitivity    string // low | medium | high
 }
 
-// PlanInfo describes what a collector would do, for `diagx plan`.
+// PlanInfo describes what a collector would do, for `diagpermit plan`.
 type PlanInfo struct {
 	Capability  string
 	Description string

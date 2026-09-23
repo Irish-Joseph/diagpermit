@@ -10,7 +10,7 @@ var (
 	rePseudoUser = regexp.MustCompile(`^user-[a-z]+$`)
 )
 
-// defaultDetectors returns the built-in detectors of diagx-default-0.1.
+// defaultDetectors returns the built-in detectors of diagpermit-default-0.1.
 //
 // Every replacement is idempotent: running the same detector over its own
 // output produces no further matches, so reports stay accurate and

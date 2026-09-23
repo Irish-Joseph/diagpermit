@@ -1,4 +1,4 @@
-// Package protocol defines the canonical data types of the DiagX
+// Package protocol defines the canonical data types of the DiagPermit
 // consent-driven diagnostic exchange protocol (protocol version 0.1).
 //
 // These types are the single source of truth shared by the CLI, the
@@ -20,7 +20,7 @@ const ProtocolVersion = "0.1"
 
 // RulesetDefault is the identifier of the built-in privacy transformation
 // ruleset shipped with V0.1.
-const RulesetDefault = "diagx-default-0.1"
+const RulesetDefault = "diagpermit-default-0.1"
 
 // Requirement states how a requester classifies a capability.
 type Requirement string
@@ -77,7 +77,7 @@ type Policy struct {
 	MaximumDurationSeconds int `json:"maximumDurationSeconds,omitempty" yaml:"maximumDurationSeconds,omitempty"`
 }
 
-// RetentionNotice is a free-text declaration by the requester. DiagX only
+// RetentionNotice is a free-text declaration by the requester. DiagPermit only
 // records the declaration; it does not enforce retention behaviour by
 // third parties that later receive the artifact.
 type RetentionNotice struct {
@@ -387,8 +387,8 @@ func ValidationError(format string, args ...any) error {
 }
 
 // Validate performs structural and semantic validation of a request
-// document. It is used by `diagx validate`, `diagx plan` and
-// `diagx collect`.
+// document. It is used by `diagpermit validate`, `diagpermit plan` and
+// `diagpermit collect`.
 func (d *DiagnosticRequest) Validate() error {
 	var problems []string
 	if d == nil {

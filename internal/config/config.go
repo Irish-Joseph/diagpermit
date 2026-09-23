@@ -1,4 +1,4 @@
-// Package config loads DiagX project configuration (diagx.yaml).
+// Package config loads DiagPermit project configuration (diagpermit.yaml).
 // YAML is the human authoring format; the canonical representation is
 // JSON (spec section 38).
 package config
@@ -12,11 +12,11 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/diagx/diagx/pkg/protocol"
+	"github.com/Irish-Joseph/diagpermit/pkg/protocol"
 )
 
 // DefaultFile is the conventional project configuration name.
-const DefaultFile = "diagx.yaml"
+const DefaultFile = "diagpermit.yaml"
 
 // Load reads a request/project document from YAML or JSON.
 func Load(path string) (*protocol.DiagnosticRequest, error) {

@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/diagx/diagx/internal/verification"
+	"github.com/Irish-Joseph/diagpermit/internal/verification"
 )
 
 var verifyCmd = &cobra.Command{

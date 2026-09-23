@@ -1,11 +1,11 @@
 package pipeline
 
 import (
-	"github.com/diagx/diagx/collectors/application"
-	"github.com/diagx/diagx/collectors/docker"
-	"github.com/diagx/diagx/collectors/runtime"
-	"github.com/diagx/diagx/collectors/system"
-	"github.com/diagx/diagx/internal/collection"
+	"github.com/Irish-Joseph/diagpermit/collectors/application"
+	"github.com/Irish-Joseph/diagpermit/collectors/docker"
+	"github.com/Irish-Joseph/diagpermit/collectors/runtime"
+	"github.com/Irish-Joseph/diagpermit/collectors/system"
+	"github.com/Irish-Joseph/diagpermit/internal/collection"
 )
 
 func newSystemCollector() collection.Collector      { return system.New() }

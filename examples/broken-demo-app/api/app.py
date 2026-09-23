@@ -2,7 +2,7 @@
 
 On every request it tries to reach the PostgreSQL database. When the
 database container is stopped, it logs a connection-refused error, which
-the DiagX demo then turns into a finding.
+the DiagPermit demo then turns into a finding.
 
 Standard library only: no dependencies, nothing secret.
 """

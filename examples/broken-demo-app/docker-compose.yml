@@ -2,7 +2,7 @@
 #
 # Failure scenario: the database container is stopped, so the API logs
 # "database connection refused". This gives a simple, understandable
-# demonstration of diagx collect producing a DATABASE_CONNECTIVITY_FAILURE
+# demonstration of diagpermit collect producing a DATABASE_CONNECTIVITY_FAILURE
 # finding.
 
 services:

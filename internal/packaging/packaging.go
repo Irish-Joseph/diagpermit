@@ -13,10 +13,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/diagx/diagx/internal/collection"
-	"github.com/diagx/diagx/internal/safezip"
-	"github.com/diagx/diagx/internal/transform"
-	"github.com/diagx/diagx/pkg/protocol"
+	"github.com/Irish-Joseph/diagpermit/internal/collection"
+	"github.com/Irish-Joseph/diagpermit/internal/safezip"
+	"github.com/Irish-Joseph/diagpermit/internal/transform"
+	"github.com/Irish-Joseph/diagpermit/pkg/protocol"
 )
 
 // Input is everything needed to build one artifact.
@@ -44,7 +44,7 @@ type ManifestMeta struct {
 func defaultMetaFor(path string, files map[string]collection.CollectedFile) ManifestMeta {
 	f, ok := files[path]
 	return ManifestMeta{
-		Collector:        "diagx",
+		Collector:        "diagpermit",
 		CollectorVersion: collection.CollectorVersion,
 		Transformed:      true, // every data file is passed through the ruleset
 		Truncated:        ok && f.Truncated,
@@ -94,7 +94,7 @@ func Build(outPath string, in *Input) (*protocol.DisclosureReceipt, error) {
 
 	// Materialize transformed files on disk in a temp dir so the zip
 	// writer can hash-and-store them consistently.
-	tmp, err := os.MkdirTemp("", "diagx-artifact-")
+	tmp, err := os.MkdirTemp("", "diagpermit-artifact-")
 	if err != nil {
 		return nil, err
 	}
@@ -139,7 +139,7 @@ func Build(outPath string, in *Input) (*protocol.DisclosureReceipt, error) {
 			meta = defaultMetaFor(path, in.Files)
 			// Root-level documents are not "collected" data.
 			if !strings.HasPrefix(path, protocol.DirData+"/") {
-				meta.Collector = "diagx"
+				meta.Collector = "diagpermit"
 				meta.CollectorVersion = collection.CollectorVersion
 				meta.Transformed = false
 			}

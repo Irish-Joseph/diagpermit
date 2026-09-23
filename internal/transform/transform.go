@@ -1,4 +1,4 @@
-// Package transform implements the DiagX privacy transformation engine
+// Package transform implements the DiagPermit privacy transformation engine
 // (spec sections 12, 14, 15, 16).
 //
 // Design notes:
@@ -153,10 +153,10 @@ type Ruleset struct {
 	Rules []Rule
 }
 
-// DefaultRuleset returns the built-in diagx-default-0.1 ruleset.
+// DefaultRuleset returns the built-in diagpermit-default-0.1 ruleset.
 func DefaultRuleset() Ruleset {
 	return Ruleset{
-		ID: "diagx-default-0.1",
+		ID: "diagpermit-default-0.1",
 		Rules: []Rule{
 			// Structural / high-signal credentials first, so later,
 			// more generic detectors never double-process them.

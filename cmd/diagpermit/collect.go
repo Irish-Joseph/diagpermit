@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/diagx/diagx/internal/pipeline"
+	"github.com/Irish-Joseph/diagpermit/internal/pipeline"
 )
 
 var collectCmd = &cobra.Command{
@@ -71,7 +71,7 @@ func printCollectSummary(cmd *cobra.Command, out *pipeline.Output) {
 	fmt.Fprintln(w, "Disclosure receipt: created")
 	fmt.Fprintln(w, "")
 	fmt.Fprintln(w, "Nothing has been uploaded.")
-	fmt.Fprintf(w, "Next: diagx inspect %s\n", out.ArtifactPath)
+	fmt.Fprintf(w, "Next: diagpermit inspect %s\n", out.ArtifactPath)
 }
 
 func init() {

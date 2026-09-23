@@ -13,8 +13,8 @@ jobs:
     name: Build and publish release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
         with:
           go-version-file: go.mod
       - name: Build
@@ -29,17 +29,17 @@ jobs:
             [ "$goos" = "windows" ] && ext=".exe"
             GOOS="$goos" GOARCH="$goarch" go build -trimpath \
               -ldflags "-s -w -X main.CLIVersion=${GITHUB_REF_NAME#v}" \
-              -o "dist/diagx-${goos}-${goarch}${ext}" ./cmd/diagx
+              -o "dist/diagpermit-${goos}-${goarch}${ext}" ./cmd/diagpermit
           done
       - name: Checksums
         working-directory: dist
-        run: sha256sum diagx-* > SHA256SUMS
+        run: sha256sum diagpermit-* > SHA256SUMS
       - name: SBOM (CycloneDX)
         run: |
           go install github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod@v1.12.0
           cyclonedx-gomod mod -json -output dist/bom.json
       - name: Publish
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: |
             dist/*

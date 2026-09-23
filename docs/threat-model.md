@@ -1,6 +1,6 @@
 # Threat Model
 
-DiagX is a security-sensitive tool: it reads local files, runs typed
+DiagPermit is a security-sensitive tool: it reads local files, runs typed
 collectors, applies privacy transformations and packages the result. This
 document states what we assume an attacker may control and how the
 reference implementation protects against it.
@@ -31,7 +31,7 @@ JSON/YAML and remote URLs.
 | ReDoS | Detectors use Go's RE2 (linear time). User patterns compile under the same engine; unparseable mandatory patterns fail closed. |
 | ZIP bombs / decompression bombs | Archive readers enforce entry-count and decompressed-size limits. |
 | Archive traversal (zip slip) | Entry names must be relative forward-slash paths; `..`, absolute and backslash names are rejected on read and write. |
-| Manifest tampering | SHA-256 over every file; receipt hashes the manifest, request and plan; `diagx verify` recomputes all three. |
+| Manifest tampering | SHA-256 over every file; receipt hashes the manifest, request and plan; `diagpermit verify` recomputes all three. |
 | Request substitution / malicious request | Requests are validated; unknown protocol versions rejected; network disabled by default; collectors declare capabilities; unsigned requests are shown as `Authenticity: NOT VERIFIED`. |
 | Network exfiltration | `networkAccess` defaults to false; network-capable collectors are blocked unless the plan (and, later, the user) allows a declared destination/protocol/purpose. |
 | Script injection (viewer) | The future viewer treats all content as hostile: HTML escaping, strict CSP, no script execution from diagnostic files, no remote images by default, restricted local binding. |

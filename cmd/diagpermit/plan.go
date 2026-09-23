@@ -8,9 +8,9 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/diagx/diagx/internal/config"
-	"github.com/diagx/diagx/internal/consent"
-	"github.com/diagx/diagx/pkg/protocol"
+	"github.com/Irish-Joseph/diagpermit/internal/config"
+	"github.com/Irish-Joseph/diagpermit/internal/consent"
+	"github.com/Irish-Joseph/diagpermit/pkg/protocol"
 )
 
 var (
@@ -21,7 +21,7 @@ var (
 )
 
 func addCommonFlags(cmd *cobra.Command) {
-	cmd.Flags().StringVarP(&flagRequest, "request", "r", config.DefaultFile, "path to the diagnostic request file (diagx.yaml)")
+	cmd.Flags().StringVarP(&flagRequest, "request", "r", config.DefaultFile, "path to the diagnostic request file (diagpermit.yaml)")
 }
 
 func loadRequest(cmd *cobra.Command) (*protocol.DiagnosticRequest, error) {

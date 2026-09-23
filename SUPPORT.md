@@ -13,10 +13,10 @@ volunteers in their personal time and sustained by community sponsorship
 
 ## What to include in a bug report
 
-- `diagx doctor` output.
-- OS/architecture and how DiagX was installed.
+- `diagpermit doctor` output.
+- OS/architecture and how DiagPermit was installed.
 - The exact commands run.
-- For artifact problems: the output of `diagx verify <artifact>`.
+- For artifact problems: the output of `diagpermit verify <artifact>`.
 
 ## Sponsorship
 

@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/diagx/diagx/pkg/protocol"
+	"github.com/Irish-Joseph/diagpermit/pkg/protocol"
 )
 
 // Mode records how the consent decisions were obtained.
@@ -21,7 +21,7 @@ const (
 	ModeInteractive = "interactive"
 	ModeAssumed     = "assumed"      // --yes: approve all non-forbidden
 	ModeFile        = "file"         // --consent consent.json
-	ModePlan        = "plan-preview" // diagx plan (no collection)
+	ModePlan        = "plan-preview" // diagpermit plan (no collection)
 )
 
 // Review holds the grouped capabilities for display and prompting.

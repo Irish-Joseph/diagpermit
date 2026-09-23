@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/diagx/diagx/internal/pipeline"
+	"github.com/Irish-Joseph/diagpermit/internal/pipeline"
 )
 
 var collectorsCmd = &cobra.Command{
@@ -14,7 +14,7 @@ var collectorsCmd = &cobra.Command{
 	Short:   "List available collectors and their declared capabilities",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		w := cmd.OutOrStdout()
-		section(w, "DiagX collectors (V0.1)")
+		section(w, "DiagPermit collectors (V0.1)")
 		fmt.Fprintln(w, "Collectors expose typed capabilities, never arbitrary behaviour.")
 		for _, c := range pipeline.AllCollectors() {
 			fmt.Fprintf(w, "\n%s (v%s)\n", c.ID(), c.Version())

@@ -1,6 +1,6 @@
 # Documentation
 
-Use this page as the documentation map for DiagX.
+Use this page as the documentation map for DiagPermit.
 
 ## Start here
 

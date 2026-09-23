@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/diagx/diagx/internal/collection"
+	"github.com/Irish-Joseph/diagpermit/internal/collection"
 )
 
 func files(path string, v any) map[string]collection.CollectedFile {

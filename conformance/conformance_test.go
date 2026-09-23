@@ -1,4 +1,4 @@
-// Package conformance implements the DiagX V0.1 conformance suite
+// Package conformance implements the DiagPermit V0.1 conformance suite
 // (spec section 30). Each numbered directory holds:
 //
 //	input files        (request, consent, sample data)
@@ -17,12 +17,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/diagx/diagx/internal/collection"
-	"github.com/diagx/diagx/internal/consent"
-	"github.com/diagx/diagx/internal/pipeline"
-	"github.com/diagx/diagx/internal/transform"
-	"github.com/diagx/diagx/internal/verification"
-	"github.com/diagx/diagx/pkg/protocol"
+	"github.com/Irish-Joseph/diagpermit/internal/collection"
+	"github.com/Irish-Joseph/diagpermit/internal/consent"
+	"github.com/Irish-Joseph/diagpermit/internal/pipeline"
+	"github.com/Irish-Joseph/diagpermit/internal/transform"
+	"github.com/Irish-Joseph/diagpermit/internal/verification"
+	"github.com/Irish-Joseph/diagpermit/pkg/protocol"
 )
 
 // --- shared helpers ---------------------------------------------------------

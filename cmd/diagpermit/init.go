@@ -7,9 +7,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const initTemplate = `# DiagX project configuration (V0.1)
+const initTemplate = `# DiagPermit project configuration (V0.1)
 # Human authoring format: YAML. Canonical representation: JSON.
-# Validate with: diagx validate diagx.yaml
+# Validate with: diagpermit validate diagpermit.yaml
 
 protocolVersion: "0.1"
 
@@ -71,7 +71,7 @@ local:
 
 var initCmd = &cobra.Command{
 	Use:   "init",
-	Short: "Create a diagx.yaml project configuration",
+	Short: "Create a diagpermit.yaml project configuration",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if _, err := os.Stat(configDefault()); err == nil {
 			return fmt.Errorf("%s already exists; refusing to overwrite", configDefault())
@@ -81,13 +81,13 @@ var initCmd = &cobra.Command{
 		}
 		fmt.Fprintln(cmd.OutOrStdout(), "Created "+configDefault())
 		fmt.Fprintln(cmd.OutOrStdout(), "Edit it to declare the capabilities your support case needs, then run:")
-		fmt.Fprintln(cmd.OutOrStdout(), "  diagx validate diagx.yaml")
-		fmt.Fprintln(cmd.OutOrStdout(), "  diagx plan")
-		fmt.Fprintln(cmd.OutOrStdout(), "  diagx collect")
+		fmt.Fprintln(cmd.OutOrStdout(), "  diagpermit validate diagpermit.yaml")
+		fmt.Fprintln(cmd.OutOrStdout(), "  diagpermit plan")
+		fmt.Fprintln(cmd.OutOrStdout(), "  diagpermit collect")
 		return nil
 	},
 }
 
-func configDefault() string { return "diagx.yaml" }
+func configDefault() string { return "diagpermit.yaml" }
 
 func init() { rootCmd.AddCommand(initCmd) }

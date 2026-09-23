@@ -1,7 +1,7 @@
-# DiagX
+# DiagPermit
 
 <p align="center">
-  <img src="docs/assets/diagx-workflow-hero.png" alt="A diagnostic request moving through consent, local collection, privacy filtering, integrity packaging, and deliberate sharing" width="100%">
+  <img src="docs/assets/diagpermit-workflow-hero.png" alt="A diagnostic request moving through consent, local collection, privacy filtering, integrity packaging, and deliberate sharing" width="100%">
 </p>
 
 <p align="center">
@@ -15,23 +15,23 @@
   <img alt="Go 1.27.1" src="https://img.shields.io/badge/Go-1.27.1-00ADD8.svg?logo=go&logoColor=white">
 </p>
 
-DiagX is an open protocol and reference CLI for **consent-driven diagnostic exchange**. A support team declares exactly what it needs, the user reviews and approves those capabilities, collection and privacy transformations happen locally, and the resulting artifact records what was requested, approved, collected, and transformed.
+DiagPermit is an open protocol and reference CLI for **consent-driven diagnostic exchange**. A support team declares exactly what it needs, the user reviews and approves those capabilities, collection and privacy transformations happen locally, and the resulting artifact records what was requested, approved, collected, and transformed.
 
 > [!IMPORTANT]
-> DiagX is an early-stage project and `DiagX` is a development codename. Do not treat the current name, protocol, or CLI as stable. See [TRADEMARKS.md](TRADEMARKS.md) and [ROADMAP.md](ROADMAP.md).
+> DiagPermit is an early-stage project. The protocol and CLI may evolve before the first stable release. See [TRADEMARKS.md](TRADEMARKS.md) and [ROADMAP.md](ROADMAP.md).
 
-## Why DiagX?
+## Why DiagPermit?
 
 “Send us your logs” is easy to ask and difficult to trust. Users may not know what a support bundle contains, requesters may receive excessive or irrelevant data, and neither side may have a durable record of the disclosure decision.
 
-DiagX makes that boundary explicit:
+DiagPermit makes that boundary explicit:
 
 - requesters declare individual diagnostic capabilities and hard limits;
 - users can approve or deny each capability, including ones marked required;
 - collection stays local and is bounded by filesystem, time, and size policies;
 - configured privacy transformations run before packaging;
 - the artifact includes an integrity manifest and disclosure receipt; and
-- sharing remains a separate, deliberate action outside DiagX.
+- sharing remains a separate, deliberate action outside DiagPermit.
 
 ## How it works
 
@@ -72,13 +72,13 @@ These screenshots were captured from the current CLI—not from a design mockup.
 **Review the disclosure plan before collection:**
 
 <p align="center">
-  <img src="docs/assets/diagx-plan.png" alt="Real DiagX plan command showing required, optional, and prohibited capabilities" width="100%">
+  <img src="docs/assets/diagpermit-plan.png" alt="Real DiagPermit plan command showing required, optional, and prohibited capabilities" width="100%">
 </p>
 
 **Verify the finished diagnostic artifact:**
 
 <p align="center">
-  <img src="docs/assets/diagx-verify.png" alt="Real DiagX verification command showing successful archive, schema, and hash checks" width="100%">
+  <img src="docs/assets/diagpermit-verify.png" alt="Real DiagPermit verification command showing successful archive, schema, and hash checks" width="100%">
 </p>
 
 ## Quick start
@@ -94,18 +94,18 @@ These screenshots were captured from the current CLI—not from a design mockup.
 ```bash
 git clone https://github.com/Irish-Joseph/diagpermit.git
 cd diagpermit
-go build -o diagx ./cmd/diagx
-./diagx --version
+go build -o diagpermit ./cmd/diagpermit
+./diagpermit --version
 ```
 
-On Windows PowerShell, run the binary as `.\diagx.exe`.
+On Windows PowerShell, run the binary as `.\diagpermit.exe`.
 
 ### Create and review a request
 
 ```bash
-./diagx init
-./diagx validate diagx.yaml
-./diagx plan
+./diagpermit init
+./diagpermit validate diagpermit.yaml
+./diagpermit plan
 ```
 
 `plan` is read-only: it shows the requester, purpose, capability requirements, network and shell policy, retention notice, and collection limits without collecting data.
@@ -113,16 +113,16 @@ On Windows PowerShell, run the binary as `.\diagx.exe`.
 ### Collect, inspect, and verify
 
 ```bash
-./diagx collect
-./diagx inspect support-CASE-LOCAL.diagnostic
-./diagx verify support-CASE-LOCAL.diagnostic
+./diagpermit collect
+./diagpermit inspect support-CASE-LOCAL.diagnostic
+./diagpermit verify support-CASE-LOCAL.diagnostic
 ```
 
 For automation, consent must still be explicit:
 
 ```bash
-./diagx collect --yes
-./diagx collect --consent consent.json
+./diagpermit collect --yes
+./diagpermit collect --consent consent.json
 ```
 
 See the [full quick start](docs/quickstart.md) and [broken demo application](examples/broken-demo-app/README.md) for an end-to-end scenario.
@@ -131,19 +131,19 @@ See the [full quick start](docs/quickstart.md) and [broken demo application](exa
 
 | Command | What it does |
 | --- | --- |
-| `diagx init` | Creates a documented `diagx.yaml` request template |
-| `diagx validate [file]` | Strictly validates configuration and rejects unknown fields |
-| `diagx plan` | Previews requested capabilities and limits without collection |
-| `diagx collect` | Runs consent → collection → transformation → packaging |
-| `diagx inspect <artifact>` | Displays a terminal-friendly artifact summary |
-| `diagx verify <artifact>` | Verifies archive structure, hashes, schemas, and receipt links |
-| `diagx redact-test [file]` | Previews privacy transformations on local input |
-| `diagx collectors` | Lists built-in collectors and declared capabilities |
-| `diagx doctor` | Checks the local CLI environment |
+| `diagpermit init` | Creates a documented `diagpermit.yaml` request template |
+| `diagpermit validate [file]` | Strictly validates configuration and rejects unknown fields |
+| `diagpermit plan` | Previews requested capabilities and limits without collection |
+| `diagpermit collect` | Runs consent → collection → transformation → packaging |
+| `diagpermit inspect <artifact>` | Displays a terminal-friendly artifact summary |
+| `diagpermit verify <artifact>` | Verifies archive structure, hashes, schemas, and receipt links |
+| `diagpermit redact-test [file]` | Previews privacy transformations on local input |
+| `diagpermit collectors` | Lists built-in collectors and declared capabilities |
+| `diagpermit doctor` | Checks the local CLI environment |
 
 ## Security and privacy model
 
-DiagX is local-first by design:
+DiagPermit is local-first by design:
 
 - no account, mandatory server, hidden telemetry, or automatic upload;
 - network access is disabled unless the request and effective plan allow it;
@@ -154,14 +154,14 @@ DiagX is local-first by design:
 - verification checks integrity, not privacy completeness.
 
 > [!WARNING]
-> Pattern-based transformations cannot guarantee that every secret or personal value has been removed. Always inspect diagnostic content before sharing it. `diagx verify` proves package integrity according to the verification model; it does **not** prove that the package is safe to disclose.
+> Pattern-based transformations cannot guarantee that every secret or personal value has been removed. Always inspect diagnostic content before sharing it. `diagpermit verify` proves package integrity according to the verification model; it does **not** prove that the package is safe to disclose.
 
 Read the [security model](docs/security.md), [threat model](docs/threat-model.md), and [vulnerability reporting policy](SECURITY.md).
 
 ## Architecture
 
 ```text
-cmd/diagx/          CLI commands
+cmd/diagpermit/     CLI commands
 collectors/         Typed system, runtime, application, and Docker collectors
 internal/           Consent, collection, transformation, packaging, and verification
 pkg/protocol/       Public protocol types and canonical JSON hashing
@@ -187,7 +187,7 @@ CI runs build, formatting, vet, tests, conformance, security-oriented linting, a
 
 ## Project scope
 
-DiagX is not an observability platform, monitoring agent, ticketing system, remote-management tool, cloud support portal, or replacement for mature collectors such as `sosreport`. Its focus is the consent, disclosure, and integrity boundary around diagnostic exchange. Existing collectors can become adapters in later versions.
+DiagPermit is not an observability platform, monitoring agent, ticketing system, remote-management tool, cloud support portal, or replacement for mature collectors such as `sosreport`. Its focus is the consent, disclosure, and integrity boundary around diagnostic exchange. Existing collectors can become adapters in later versions.
 
 ## Contributing
 
