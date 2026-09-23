@@ -12,3 +12,6 @@ examples/broken-demo-app/logs/
 
 # Go
 vendor/
+
+# Windows shell artifact
+nul
