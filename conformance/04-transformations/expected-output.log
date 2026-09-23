@@ -1,0 +1,4 @@
+db url postgres://<DB-CREDENTIALS>@host-a:5432/prod
+contact user-a@example.com
+peer host-b and host-b
+token AKIA***

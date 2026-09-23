@@ -1,0 +1,2 @@
+mongo mongodb://svc:MongoPass123@replica1.example.net:27017/db
+amqp amqps://u:AmqpPass!@broker.example.net:5671/vhost

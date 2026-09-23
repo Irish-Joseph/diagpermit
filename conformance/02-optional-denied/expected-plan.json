@@ -1,0 +1,7 @@
+{
+  "approved": ["system.os"],
+  "denied": ["runtime.node.version"],
+  "forbidden": [],
+  "networkAccess": false,
+  "shellExecution": false
+}

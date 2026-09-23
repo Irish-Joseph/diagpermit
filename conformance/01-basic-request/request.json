@@ -1,0 +1,11 @@
+{
+  "protocolVersion": "0.1",
+  "request": {"id": "CONF-01"},
+  "requester": {"organization": "Conformance", "name": "Conformance Support"},
+  "purpose": {"code": "basic", "description": "Basic request vector"},
+  "capabilities": {
+    "system.os": {"requirement": "required_for_case"},
+    "runtime.python.version": {"requirement": "optional"}
+  },
+  "policy": {"networkAccess": false, "arbitraryShellExecution": false, "maximumTotalBytes": 26214400, "maximumDurationSeconds": 60}
+}

@@ -1,0 +1,4 @@
+db url postgres://appuser:Sup3rS3cret@db.internal:5432/prod
+contact alice.smith@example.com
+peer 192.168.1.20 and 192.168.1.20
+token AKIAIOSFODNN7EXAMPLE

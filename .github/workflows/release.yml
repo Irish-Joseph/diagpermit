@@ -1,0 +1,55 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build & publish ({{ matrix.os }})
+    strategy:
+      matrix:
+        include:
+          - goos: linux
+            goarch: amd64
+          - goos: linux
+            goarch: arm64
+          - goos: windows
+            goarch: amd64
+          - goos: darwin
+            goarch: arm64
+          - goos: darwin
+            goarch: amd64
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+      - name: Build
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+        run: |
+          mkdir -p dist
+          ext=""
+          [ "${{ matrix.goos }}" = "windows" ] && ext=".exe"
+          go build -trimpath -ldflags "-s -w -X main.CLIVersion=${GITHUB_REF_NAME#v}" \
+            -o "diagx-${{ matrix.goos }}-${{ matrix.goarch }}${ext}" ./cmd/diagx
+      - name: Checksums
+        run: |
+          ( cd dist && sha256sum * > SHA256SUMS )
+      - name: SBOM (CycloneDX)
+        run: |
+          go install github.com/CycloneDX/cyclonedx-gomod@latest
+          cyclonedx-gomod . -json -output dist/bom.json || true
+      - name: Publish
+        uses: softprops/action-gh-release@v2
+        if: matrix.goos == 'linux' && matrix.goarch == 'amd64'
+        with:
+          files: |
+            dist/*

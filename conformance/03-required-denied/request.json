@@ -1,0 +1,11 @@
+{
+  "protocolVersion": "0.1",
+  "request": {"id": "CONF-03"},
+  "requester": {"name": "Conformance Support"},
+  "purpose": {"code": "required-denied", "description": "Required capability denied"},
+  "capabilities": {
+    "system.os": {"requirement": "required_for_case"},
+    "system.disk": {"requirement": "optional"}
+  },
+  "policy": {"networkAccess": false, "arbitraryShellExecution": false}
+}

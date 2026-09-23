@@ -1,0 +1,7 @@
+{
+  "approved": ["runtime.python.version", "system.os"],
+  "denied": [],
+  "forbidden": [],
+  "networkAccess": false,
+  "shellExecution": false
+}

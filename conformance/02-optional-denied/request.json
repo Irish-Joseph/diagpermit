@@ -1,0 +1,11 @@
+{
+  "protocolVersion": "0.1",
+  "request": {"id": "CONF-02"},
+  "requester": {"name": "Conformance Support"},
+  "purpose": {"code": "optional-denied", "description": "Optional capability denied"},
+  "capabilities": {
+    "system.os": {"requirement": "required_for_case"},
+    "runtime.node.version": {"requirement": "optional"}
+  },
+  "policy": {"networkAccess": false, "arbitraryShellExecution": false}
+}

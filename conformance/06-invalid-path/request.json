@@ -1,0 +1,11 @@
+{
+  "protocolVersion": "0.1",
+  "request": {"id": "CONF-06"},
+  "requester": {"name": "Conformance Support"},
+  "purpose": {"code": "invalid-path", "description": "Path traversal attempt"},
+  "capabilities": {
+    "application.logs": {"requirement": "optional"}
+  },
+  "policy": {"networkAccess": false, "arbitraryShellExecution": false},
+  "local": {"applicationLogPath": "../secret-outside-root.txt"}
+}

@@ -1,0 +1,6 @@
+password=Sup3rS3cretP4ssw0rd
+db.password: "hunter22"
+pwd = abcdef123456
+conn postgres://appuser:Sup3rS3cret@db.internal:5432/prod
+conn2 mysql://root:R00tPass@10.0.0.5:3306/app
+redis url redis://:cachekey@10.0.0.6:6379/0
