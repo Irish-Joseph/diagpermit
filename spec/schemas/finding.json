@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://diagx.dev/schemas/finding.json",
+  "title": "Finding",
+  "description": "A deterministic, evidence-backed observation. Findings are NOT vulnerability claims unless they truly represent one.",
+  "type": "object",
+  "required": ["id", "severity", "summary", "evidence"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[A-Z0-9_]+$"},
+    "severity": {"type": "string", "enum": ["info", "warning", "error"]},
+    "summary": {"type": "string"},
+    "evidence": {"type": "array", "items": {"type": "string"}}
+  }
+}

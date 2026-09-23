@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://diagx.dev/schemas/consent-decision.json",
+  "title": "ConsentDecision",
+  "description": "Recorded outcome of the user's consent review.",
+  "type": "object",
+  "required": ["protocolVersion", "requestId", "decidedAt", "mode", "decisions"],
+  "properties": {
+    "protocolVersion": {"type": "string"},
+    "requestId": {"type": "string"},
+    "decidedAt": {"type": "string", "format": "date-time"},
+    "mode": {"type": "string", "enum": ["interactive", "assumed", "file", "plan-preview"]},
+    "decisions": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["state"],
+        "properties": {"state": {"type": "string", "enum": ["approved", "denied"]}}
+      }
+    }
+  }
+}

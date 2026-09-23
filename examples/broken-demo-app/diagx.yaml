@@ -1,0 +1,48 @@
+# DiagX request for the DiagShop broken-demo-app scenario.
+protocolVersion: "0.1"
+
+request:
+  id: DIAGSHOP-1
+
+requester:
+  organization: DiagShop
+  name: DiagShop Support
+
+purpose:
+  code: database-connectivity
+  description: Diagnose failed database connections in the DiagShop demo
+
+capabilities:
+
+  system.os:
+    requirement: required_for_case
+
+  docker.container_state:
+    requirement: required_for_case
+
+  application.logs:
+    requirement: required_for_case
+    constraints:
+      maxLines: 500
+
+  runtime.python.version:
+    requirement: optional
+
+  environment.values:
+    requirement: forbidden
+
+  filesystem.source_code:
+    requirement: forbidden
+
+policy:
+  networkAccess: false
+  arbitraryShellExecution: false
+  maximumTotalBytes: 26214400
+  maximumDurationSeconds: 60
+
+retentionNotice:
+  text: Diagnostic information is expected to be retained for up to 30 days.
+
+local:
+  applicationLogPath: ./logs/app.log
+  outputDir: .

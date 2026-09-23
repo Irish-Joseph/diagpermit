@@ -1,0 +1,14 @@
+# Build artifacts
+/diagx
+/diagx.exe
+*.exe
+dist/
+
+# Generated diagnostic artifacts (never commit local diagnostics)
+*.diagnostic
+
+# Demo app local logs
+examples/broken-demo-app/logs/
+
+# Go
+vendor/

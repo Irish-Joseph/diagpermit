@@ -1,0 +1,43 @@
+# Example diagnostic request (the one from the product specification).
+protocolVersion: "0.1"
+
+request:
+  id: CASE-82341
+
+requester:
+  organization: ExampleDB
+  name: ExampleDB Support
+
+purpose:
+  code: database-connectivity
+  description: Diagnose failed database connections
+
+expiresAt: 2026-10-10T00:00:00Z
+
+capabilities:
+
+  system.os:
+    requirement: required_for_case
+
+  runtime.python.version:
+    requirement: required_for_case
+
+  docker.container_state:
+    requirement: optional
+
+  application.logs:
+    requirement: optional
+    constraints:
+      maxLines: 500
+
+  environment.values:
+    requirement: forbidden
+
+  filesystem.source_code:
+    requirement: forbidden
+
+policy:
+  networkAccess: false
+  arbitraryShellExecution: false
+  maximumTotalBytes: 26214400
+  maximumDurationSeconds: 60

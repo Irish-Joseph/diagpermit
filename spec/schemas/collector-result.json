@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://diagx.dev/schemas/collector-result.json",
+  "title": "CollectorResult",
+  "description": "What actually happened for one capability during collection. Part of the CollectionReport in collection.json.",
+  "type": "object",
+  "required": ["capability", "status", "startedAt", "completedAt"],
+  "properties": {
+    "capability": {"type": "string"},
+    "collector": {"type": "string"},
+    "collectorVersion": {"type": "string"},
+    "status": {
+      "type": "string",
+      "enum": ["success", "partial", "failed", "skipped", "denied_by_user", "forbidden", "unsupported", "timed_out", "size_limit_exceeded"]
+    },
+    "startedAt": {"type": "string", "format": "date-time"},
+    "completedAt": {"type": "string", "format": "date-time"},
+    "bytes": {"type": "integer", "minimum": 0},
+    "files": {"type": "array", "items": {"type": "string"}},
+    "message": {"type": "string"}
+  }
+}

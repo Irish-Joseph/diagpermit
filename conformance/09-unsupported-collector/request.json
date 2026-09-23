@@ -1,0 +1,10 @@
+{
+  "protocolVersion": "0.1",
+  "request": {"id": "CONF-09"},
+  "requester": {"name": "Conformance Support"},
+  "purpose": {"code": "unsupported", "description": "No V0.1 collector for capability"},
+  "capabilities": {
+    "network.interfaces": {"requirement": "optional"}
+  },
+  "policy": {"networkAccess": false, "arbitraryShellExecution": false}
+}

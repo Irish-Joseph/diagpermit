@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://diagx.dev/schemas/manifest.json",
+  "title": "Manifest",
+  "description": "Integrity manifest of a diagnostic artifact. Records every file (except the disclosure receipt itself).",
+  "type": "object",
+  "required": ["protocolVersion", "requestId", "generatedAt", "totalBytes", "entries"],
+  "properties": {
+    "protocolVersion": {"type": "string"},
+    "requestId": {"type": "string"},
+    "generatedAt": {"type": "string", "format": "date-time"},
+    "totalBytes": {"type": "integer", "minimum": 0},
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "mediaType", "size", "sha256", "collector", "collectorVersion", "transformed", "truncated"],
+        "properties": {
+          "path": {"type": "string"},
+          "mediaType": {"type": "string"},
+          "size": {"type": "integer", "minimum": 0},
+          "sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+          "collector": {"type": "string"},
+          "collectorVersion": {"type": "string"},
+          "collectedAt": {"type": "string"},
+          "transformed": {"type": "boolean"},
+          "truncated": {"type": "boolean"}
+        }
+      }
+    }
+  }
+}

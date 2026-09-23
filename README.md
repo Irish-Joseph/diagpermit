@@ -1,67 +1,175 @@
-# DiagPermit
+# DiagX
 
-[![Project status: pre-development](https://img.shields.io/badge/status-pre--development-orange.svg)](#project-status)
-[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+> **Know what you're sharing before you send diagnostics.**
 
-**A consent-driven approach to sharing software diagnostics.**
+DiagX is an open protocol and CLI for consent-driven software diagnostics.
 
-DiagPermit is an open-source project exploring a safer, clearer way for users and support teams to exchange diagnostic information. Instead of a vague request to "send the logs," a requester should describe what information is needed, the user should be able to review and approve that request, and collection should happen locally under explicit limits.
+A requester declares what troubleshooting information it needs.
 
-> [!IMPORTANT]
-> This repository is currently in the planning stage. There is no usable release or published protocol specification yet.
+The user reviews and approves those capabilities.
 
-## Why this project is needed
+Collection and privacy transformations happen locally.
 
-Troubleshooting often requires logs, configuration, system details, and other diagnostic data. Today, that exchange can be difficult to reason about:
+The resulting diagnostic artifact contains a **disclosure receipt**
+describing what was requested, approved, collected and transformed.
 
-- users may not know exactly what they are sharing;
-- support teams may receive too much data, too little data, or the wrong data;
-- sensitive information can be included unintentionally;
-- approvals and transformations are rarely recorded in a consistent way; and
-- recipients may have no reliable way to verify how a diagnostic package was produced.
-
-DiagPermit aims to make this exchange intentional and auditable, while keeping the user in control.
-
-## The idea
-
-```mermaid
-flowchart LR
-    A[Diagnostic request] --> B[User review]
-    B --> C{Consent}
-    C -->|Approved| D[Local collection]
-    C -->|Declined| X[No collection]
-    D --> E[Privacy transformations]
-    E --> F[Diagnostic package]
-    F --> G[Intentional sharing]
+```bash
+diagx plan
+diagx collect
+diagx inspect support.diagnostic
+diagx verify support.diagnostic
 ```
 
-At a high level, the project is intended to support a workflow in which:
+**Technical:** an open protocol for consent-driven diagnostic exchange.
 
-1. A requester declares the diagnostic information they need.
-2. The user reviews the request and makes an explicit choice.
-3. Approved data is collected locally under defined restrictions.
-4. Privacy transformations are applied before sharing.
-5. The resulting package carries a record of what was requested, approved, and processed.
+> **Naming note:** `DiagX` is a development codename. Do not register
+> domains, publish packages or create final branding until a proper
+> GitHub/package/domain/trademark search is complete (see
+> [TRADEMARKS.md](TRADEMARKS.md)).
 
-## Guiding principles
+---
 
-- **Consent first:** diagnostic access should be understandable and explicitly approved.
-- **Local control:** collection and review should happen on the user's system before anything is shared.
-- **Data minimization:** collect only what is necessary for the stated diagnostic purpose.
-- **Transparency:** make requests, approvals, and transformations visible.
-- **Verifiability:** enable recipients to check the integrity and provenance of diagnostic artifacts.
-- **Open collaboration:** develop the approach in public with community review.
+## What this is (and is not)
 
-## What DiagPermit is not
+DiagX is **not** a log collector, a ZIP creator, a Kubernetes tool, a
+monitoring platform, an APM product, an AI chatbot, a cloud portal, a
+ticketing system, a secrets scanner or a remote-management agent.
 
-DiagPermit is not intended to be an observability platform, monitoring agent, ticketing system, remote-management tool, or a replacement for existing troubleshooting products. Its focus is the consent and trust boundary around diagnostic exchange.
+Mature collectors already exist. Replicated Troubleshoot provides
+customizable collection, redaction and analysis of Kubernetes diagnostics;
+`sosreport` is an extensible support-data collection system for Linux.
+DiagX does not compete with them on collection alone.
 
-## Project status
+DiagX's position:
 
-The project is in **pre-development**. This repository currently establishes the problem, vision, and principles. Protocol design, implementation, contribution guidance, and release plans will be published as they become ready for public review.
+> **DiagX aims to provide a vendor-neutral consent and disclosure protocol
+> around diagnostic exchange, including requester-declared capabilities,
+> explicit user decisions, portable disclosure receipts, interoperability
+> and conformance testing.**
 
-If this problem interests you, watch the repository for updates. Issues and contribution workflows will open when the initial public development phase begins.
+Existing diagnostic collectors may eventually become DiagX adapters.
+
+## The workflow
+
+```
+Diagnostic Request
+        ↓
+Capability Review
+        ↓
+User Consent
+        ↓
+Effective Disclosure Plan
+        ↓
+Local Collection
+        ↓
+Privacy Transformations
+        ↓
+Diagnostic Artifact + Disclosure Receipt
+        ↓
+Integrity Verification
+        ↓
+Intentional Sharing   (always a separate, deliberate action)
+```
+
+That workflow is the product.
+
+## Quickstart
+
+```bash
+# 1. Create a project configuration
+diagx init
+
+# 2. Edit diagx.yaml to declare the capabilities your case needs
+# 3. Validate it
+diagx validate diagx.yaml
+
+# 4. See exactly what would be collected (collects nothing)
+diagx plan
+
+# 5. Collect under explicit consent (local only)
+diagx collect
+
+# 6. Inspect and verify the artifact
+diagx inspect support-CASE-LOCAL.diagnostic
+diagx verify support-CASE-LOCAL.diagnostic
+```
+
+`diagx collect` only ever creates a local file. There is no mandatory
+DiagX server, no account, no automatic cloud synchronization, no automatic
+upload and no hidden telemetry. Sharing the artifact is always a separate,
+deliberate action outside this tool.
+
+See [docs/quickstart.md](docs/quickstart.md) for a walkthrough.
+
+## Privacy: what the tools do and do not claim
+
+DiagX applies configured pattern detectors and transformations locally and
+**records which configured detectors and transformations executed
+successfully.** It records counts, never the original values.
+
+It does **not** guarantee that all secrets are removed. No general secret
+detector can make that guarantee. **Users should review diagnostic content
+before sharing it.** `diagx verify` proves integrity — that the package has
+not changed according to the verification model — and never claims a
+privacy guarantee.
+
+If a mandatory privacy transformation fails, DiagX **fails closed**:
+collection stops safely and no shareable artifact is produced.
+
+## Commands
+
+| Command | Purpose |
+| --- | --- |
+| `diagx init` | Create `diagx.yaml` project configuration |
+| `diagx validate [file]` | Validate a request/project schema |
+| `diagx plan` | Show exactly what would happen, without collecting |
+| `diagx collect` | request → consent → plan → collection → transformation → package |
+| `diagx inspect <artifact>` | Terminal-friendly summary of an artifact |
+| `diagx verify <artifact>` | Check integrity and schemas |
+| `diagx redact-test [file]` | See transformation behaviour safely |
+| `diagx collectors` | List collectors and declared capabilities |
+| `diagx doctor` | Check the health of this DiagX installation |
+
+## Repository layout
+
+```
+cmd/            CLI
+internal/       consent, collection, transform, packaging, verification, ...
+pkg/protocol/   canonical protocol types
+collectors/     system, runtime, application, docker
+spec/           JSON schemas, examples, RFCs
+conformance/    conformance test vectors
+testdata/       synthetic secret test corpus
+examples/       broken demo application (DiagShop)
+docs/           quickstart, protocol overview, threat model, security
+```
+
+## Building
+
+Requires Go 1.22+.
+
+```bash
+go build -o diagx ./cmd/diagx
+go test ./...
+go test ./conformance/   # conformance suite
+```
+
+## Security
+
+Read [SECURITY.md](SECURITY.md) and [docs/threat-model.md](docs/threat-model.md).
+Report vulnerabilities privately; do not open public issues for security
+problems.
+
+## Roadmap
+
+See [ROADMAP.md](ROADMAP.md). V0.1 is the protocol + reference CLI +
+conformance. V0.2 adds the local viewer, signed requests and the first
+existing-tool adapter. AI, cloud features, plugin marketplaces and
+dashboards are explicitly out of scope for V0.1.
 
 ## License
 
-This project is licensed under the [Apache License 2.0](LICENSE).
+Apache License 2.0 — see [LICENSE](LICENSE).
+
+Contributions are governed by [CONTRIBUTING.md](CONTRIBUTING.md),
+[GOVERNANCE.md](GOVERNANCE.md) and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://diagx.dev/schemas/capability.json",
+  "title": "Capability",
+  "description": "One declared diagnostic capability and how the requester classifies it.",
+  "type": "object",
+  "required": ["requirement"],
+  "properties": {
+    "requirement": {
+      "type": "string",
+      "enum": ["required_for_case", "optional", "forbidden", "not_requested"]
+    },
+    "constraints": {
+      "type": ["object", "null"],
+      "properties": {
+        "maxLines": {"type": "integer", "minimum": 0},
+        "maxBytes": {"type": "integer", "minimum": 0},
+        "since": {"type": "string", "format": "date-time"}
+      }
+    }
+  }
+}

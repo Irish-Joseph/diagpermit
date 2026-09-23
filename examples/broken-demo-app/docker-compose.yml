@@ -1,0 +1,32 @@
+# DiagShop — a deliberately broken demo application.
+#
+# Failure scenario: the database container is stopped, so the API logs
+# "database connection refused". This gives a simple, understandable
+# demonstration of diagx collect producing a DATABASE_CONNECTIVITY_FAILURE
+# finding.
+
+services:
+  api:
+    build: ./api
+    container_name: diagshop-api
+    ports:
+      - "8090:8090"
+    environment:
+      DATABASE_HOST: database
+      DATABASE_PORT: "5432"
+    depends_on:
+      database:
+        condition: service_started
+
+  database:
+    image: postgres:16-alpine
+    container_name: diagshop-database
+    environment:
+      POSTGRES_USER: diagshop
+      POSTGRES_PASSWORD: diagshop
+      POSTGRES_DB: diagshop
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U diagshop"]
+      interval: 5s
+      timeout: 3s
+      retries: 10

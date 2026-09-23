@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://diagx.dev/schemas/diagnostic-request.json",
+  "title": "DiagnosticRequest",
+  "description": "The requester's declaration of the diagnostic information needed for a support case. Protocol 0.1.",
+  "type": "object",
+  "required": ["protocolVersion", "request", "requester", "purpose", "capabilities", "policy"],
+  "properties": {
+    "protocolVersion": {"type": "string", "const": "0.1"},
+    "request": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {"id": {"type": "string", "minLength": 1}}
+    },
+    "requester": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "organization": {"type": "string"},
+        "name": {"type": "string", "minLength": 1}
+      }
+    },
+    "purpose": {
+      "type": "object",
+      "required": ["code", "description"],
+      "properties": {
+        "code": {"type": "string", "minLength": 1},
+        "description": {"type": "string", "minLength": 1}
+      }
+    },
+    "expiresAt": {"type": "string", "format": "date-time"},
+    "capabilities": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {"$ref": "capability.json"}
+    },
+    "policy": {
+      "type": "object",
+      "required": ["networkAccess", "arbitraryShellExecution"],
+      "properties": {
+        "networkAccess": {"type": "boolean", "const": false},
+        "arbitraryShellExecution": {"type": "boolean", "const": false},
+        "maximumTotalBytes": {"type": "integer", "minimum": 0},
+        "maximumDurationSeconds": {"type": "integer", "minimum": 0}
+      }
+    },
+    "retentionNotice": {
+      "type": ["object", "null"],
+      "required": ["text"],
+      "properties": {"text": {"type": "string"}}
+    },
+    "local": {"type": ["object", "null"]}
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://diagx.dev/schemas/effective-disclosure-plan.json",
+  "title": "EffectiveDisclosurePlan",
+  "description": "Immutable logical plan computed from request + consent BEFORE collection. A hash of this document is embedded in the disclosure receipt.",
+  "type": "object",
+  "required": ["protocolVersion", "requestId", "approved", "denied", "forbidden", "networkAccess", "shellExecution"],
+  "properties": {
+    "protocolVersion": {"type": "string"},
+    "requestId": {"type": "string"},
+    "approved": {"type": "array", "items": {"type": "string"}},
+    "denied": {"type": "array", "items": {"type": "string"}},
+    "forbidden": {"type": "array", "items": {"type": "string"}},
+    "notRequested": {"type": "array", "items": {"type": "string"}},
+    "networkAccess": {"type": "boolean"},
+    "shellExecution": {"type": "boolean"}
+  }
+}

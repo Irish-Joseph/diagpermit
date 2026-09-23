@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://diagx.dev/schemas/disclosure-receipt.json",
+  "title": "DisclosureReceipt",
+  "description": "Every diagnostic artifact MUST contain a disclosure receipt answering: what was requested, what was approved, what actually ran, what was packaged.",
+  "type": "object",
+  "required": ["protocolVersion", "request", "disclosurePlanHash", "consent", "collection", "transformations", "artifact"],
+  "properties": {
+    "protocolVersion": {"type": "string"},
+    "request": {
+      "type": "object",
+      "required": ["id", "hash"],
+      "properties": {
+        "id": {"type": "string"},
+        "hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "disclosurePlanHash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "consent": {
+      "type": "object",
+      "required": ["approved", "denied"],
+      "properties": {
+        "approved": {"type": "array", "items": {"type": "string"}},
+        "denied": {"type": "array", "items": {"type": "string"}},
+        "forbidden": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "collection": {
+      "type": "object",
+      "required": ["networkAccess", "arbitraryShellExecution", "startedAt", "completedAt"],
+      "properties": {
+        "networkAccess": {"type": "boolean"},
+        "arbitraryShellExecution": {"type": "boolean"},
+        "startedAt": {"type": "string", "format": "date-time"},
+        "completedAt": {"type": "string", "format": "date-time"}
+      }
+    },
+    "transformations": {
+      "type": "object",
+      "required": ["ruleset", "detectorsExecuted", "transformationsApplied"],
+      "properties": {
+        "ruleset": {"type": "string"},
+        "detectorsExecuted": {"type": "integer"},
+        "transformationsApplied": {"type": "integer"}
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "required": ["manifestHash"],
+      "properties": {
+        "manifestHash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://diagx.dev/schemas/transformation-report.json",
+  "title": "TransformationReport",
+  "description": "Summary of the privacy transformation phase. Must never contain original secret values.",
+  "type": "object",
+  "required": ["protocolVersion", "requestId", "ruleset", "detectorsExecuted", "transformationsApplied", "detectors"],
+  "properties": {
+    "protocolVersion": {"type": "string"},
+    "requestId": {"type": "string"},
+    "ruleset": {"type": "string"},
+    "detectorsExecuted": {"type": "integer", "minimum": 0},
+    "transformationsApplied": {"type": "integer", "minimum": 0},
+    "detectors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["detector", "executed", "transformer"],
+        "properties": {
+          "detector": {"type": "string"},
+          "category": {"type": "string"},
+          "executed": {"type": "boolean"},
+          "matches": {"type": "integer", "minimum": 0},
+          "transformer": {"type": "string", "enum": ["drop", "mask", "replace", "truncate", "hash", "pseudonymize"]}
+        }
+      }
+    },
+    "files": {"type": "array", "items": {"type": "string"}}
+  }
+}

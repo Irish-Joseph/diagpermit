@@ -1,0 +1,7 @@
+{
+  "approved": ["system.disk"],
+  "denied": ["system.os"],
+  "forbidden": [],
+  "networkAccess": false,
+  "shellExecution": false
+}
