@@ -14,6 +14,7 @@ import (
 	"github.com/shirou/gopsutil/v4/mem"
 
 	"github.com/diagx/diagx/internal/collection"
+	"github.com/diagx/diagx/pkg/protocol"
 )
 
 // CollectorID is the stable collector identifier.
@@ -54,13 +55,11 @@ func (c *Collector) Plan(cc *collection.Context) collection.PlanInfo {
 
 // OSInfo is the data/system/os.json payload.
 type OSInfo struct {
-	OS           string   `json:"os"`
-	Platform     string   `json:"platform"`
-	Version      string   `json:"version"`
-	Architecture string   `json:"architecture"`
-	CollectedAt  string   `json:"collectedAt"`
-	Memory       *MemInfo `json:"memory,omitempty"`
-	Disks        []Disk   `json:"disks,omitempty"`
+	OS           string `json:"os"`
+	Platform     string `json:"platform"`
+	Version      string `json:"version"`
+	Architecture string `json:"architecture"`
+	CollectedAt  string `json:"collectedAt"`
 }
 
 // MemInfo summarizes memory.
@@ -68,6 +67,7 @@ type MemInfo struct {
 	TotalBytes     uint64  `json:"totalBytes"`
 	AvailableBytes uint64  `json:"availableBytes"`
 	UsedPercent    float64 `json:"usedPercent"`
+	CollectedAt    string  `json:"collectedAt"`
 }
 
 // Disk summarizes one mounted volume. Mount points are included because
@@ -81,74 +81,70 @@ type Disk struct {
 	UsedPercent float64 `json:"usedPercent"`
 }
 
+// DisksInfo is the data/system/disks.json payload.
+type DisksInfo struct {
+	Disks       []Disk `json:"disks"`
+	CollectedAt string `json:"collectedAt"`
+}
+
 // Collect implements collection.Collector.
 func (c *Collector) Collect(cc *collection.Context) collection.Result {
-	res := collection.Result{Status: "success"}
-	now := time.Now().UTC().Format(time.RFC3339)
-
-	var info OSInfo
-	h, err := host.Info()
-	if err != nil {
-		// Degraded: still report the kernel-level OS name.
-		info = OSInfo{OS: runtime.GOOS, Platform: "unknown", Version: "unknown", Architecture: runtime.GOARCH, CollectedAt: now}
-		res.Status = "partial"
-		res.Message = "host info degraded: " + err.Error()
-	} else {
-		info = OSInfo{
-			OS:           runtime.GOOS,
-			Platform:     h.Platform,
-			Version:      h.PlatformVersion,
-			Architecture: runtime.GOARCH,
-			CollectedAt:  now,
-		}
-	}
-
 	ctx, cancel := context.WithTimeout(cc.Ctx, 10*time.Second)
 	defer cancel()
-	_ = ctx
+	collectedAt := time.Now().UTC().Format(time.RFC3339)
 
-	if vm, err := mem.VirtualMemory(); err == nil {
-		info.Memory = &MemInfo{TotalBytes: vm.Total, AvailableBytes: vm.Available, UsedPercent: vm.UsedPercent}
-	} else {
-		res.Status = "partial"
-	}
-	if parts, err := disk.Partitions(false); err == nil && len(parts) > 0 {
-		for i, p := range parts {
-			if i >= 10 {
+	switch cc.Capability {
+	case CapOS:
+		info := OSInfo{OS: runtime.GOOS, Platform: "unknown", Version: "unknown", Architecture: runtime.GOARCH, CollectedAt: collectedAt}
+		status, message := protocol.StatusSuccess, ""
+		if h, err := host.InfoWithContext(ctx); err != nil {
+			status = protocol.StatusPartial
+			message = "host info degraded: " + err.Error()
+		} else {
+			info.Platform = h.Platform
+			info.Version = h.PlatformVersion
+		}
+		return result("data/system/os.json", info, status, message)
+
+	case CapMemory:
+		vm, err := mem.VirtualMemoryWithContext(ctx)
+		if err != nil {
+			return collection.Result{Status: protocol.StatusFailed, Message: "memory info unavailable: " + err.Error()}
+		}
+		info := MemInfo{TotalBytes: vm.Total, AvailableBytes: vm.Available, UsedPercent: vm.UsedPercent, CollectedAt: collectedAt}
+		return result("data/system/memory.json", info, protocol.StatusSuccess, "")
+
+	case CapDisk:
+		parts, err := disk.PartitionsWithContext(ctx, false)
+		if err != nil {
+			return collection.Result{Status: protocol.StatusFailed, Message: "disk partitions unavailable: " + err.Error()}
+		}
+		info := DisksInfo{CollectedAt: collectedAt}
+		for _, p := range parts {
+			if len(info.Disks) >= 10 {
 				break
 			}
-			if u, err := disk.Usage(p.Mountpoint); err == nil {
+			if u, err := disk.UsageWithContext(ctx, p.Mountpoint); err == nil {
 				info.Disks = append(info.Disks, Disk{
 					Mountpoint: p.Mountpoint, FSType: p.Fstype,
 					TotalBytes: u.Total, UsedBytes: u.Used, UsedPercent: u.UsedPercent,
 				})
 			}
 		}
-	} else {
-		if res.Status == "success" {
-			res.Status = "partial"
-		}
-	}
-
-	switch cc.Capability {
-	case CapMemory:
-		if info.Memory == nil {
-			return collection.Result{Status: "failed", Message: "memory info unavailable"}
-		}
-		res.Files = files("data/system/os.json", subsetMem(info))
-	case CapDisk:
 		if len(info.Disks) == 0 {
-			return collection.Result{Status: "partial", Message: "no disk usage available"}
+			return collection.Result{Status: protocol.StatusPartial, Message: "no disk usage available"}
 		}
-		res.Files = files("data/system/os.json", subsetDisk(info))
-	default: // system.os (and unknown → full)
-		res.Files = files("data/system/os.json", info)
+		return result("data/system/disks.json", info, protocol.StatusSuccess, "")
+
+	default:
+		return collection.Result{Status: protocol.StatusUnsupported, Message: "unknown system capability"}
 	}
-	for _, f := range res.Files {
-		res.Bytes += int64(len(f.Content))
-	}
-	return res
 }
 
-func subsetMem(info OSInfo) OSInfo  { return info }
-func subsetDisk(info OSInfo) OSInfo { return info }
+func result(path string, value any, status protocol.CollectionStatus, message string) collection.Result {
+	result := collection.Result{Status: status, Message: message, Files: files(path, value)}
+	for _, file := range result.Files {
+		result.Bytes += int64(len(file.Content))
+	}
+	return result
+}

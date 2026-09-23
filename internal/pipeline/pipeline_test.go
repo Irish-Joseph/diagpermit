@@ -1,6 +1,7 @@
 package pipeline
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -13,6 +14,7 @@ import (
 	"github.com/diagx/diagx/internal/collection"
 	"github.com/diagx/diagx/internal/consent"
 	"github.com/diagx/diagx/internal/safezip"
+	"github.com/diagx/diagx/internal/transform"
 	"github.com/diagx/diagx/internal/verification"
 	"github.com/diagx/diagx/pkg/protocol"
 )
@@ -370,6 +372,29 @@ func TestFailClosedNoArtifact(t *testing.T) {
 	}
 	if _, statErr := os.Stat(outPath); !os.IsNotExist(statErr) {
 		t.Fatal("artifact must NOT be produced on fail-closed")
+	}
+}
+
+func TestPrintFailClosedRecognizesPipelineWrapper(t *testing.T) {
+	err := &FailClosedPipelineError{FailClosedError: transform.FailClosedError{
+		Collector: "application", Transformer: "custom:test", Reason: "boom",
+	}}
+	var output bytes.Buffer
+	if !PrintFailClosed(&output, err) {
+		t.Fatal("wrapped fail-closed error was not recognized")
+	}
+	for _, expected := range []string{"COLLECTION STOPPED SAFELY", "application", "custom:test", "boom"} {
+		if !strings.Contains(output.String(), expected) {
+			t.Fatalf("output missing %q: %s", expected, output.String())
+		}
+	}
+
+	output.Reset()
+	if PrintFailClosed(&output, fmt.Errorf("ordinary failure")) {
+		t.Fatal("ordinary error must not be rendered as fail-closed")
+	}
+	if output.Len() != 0 {
+		t.Fatalf("ordinary error should not be duplicated, got %q", output.String())
 	}
 }
 

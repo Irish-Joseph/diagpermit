@@ -72,6 +72,7 @@ type Writer struct {
 
 // Create opens (or truncates) a ZIP file for writing.
 func Create(file string) (*Writer, error) {
+	// #nosec G304 -- callers explicitly choose the local artifact output path.
 	f, err := os.Create(file)
 	if err != nil {
 		return nil, err
@@ -94,6 +95,7 @@ func (w *Writer) AddFile(logicalName, diskPath string) (int64, error) {
 		_ = w.Close()
 		return 0, err
 	}
+	// #nosec G304 -- diskPath is an internal staging path created by the packager.
 	f, err := os.Open(diskPath)
 	if err != nil {
 		_ = w.Close()
@@ -150,6 +152,7 @@ type Reader struct {
 
 // Open opens an artifact for safe reading.
 func Open(file string, lim Limits) (*Reader, error) {
+	// #nosec G304 -- callers explicitly choose the local artifact input path.
 	f, err := os.Open(file)
 	if err != nil {
 		return nil, err
@@ -164,23 +167,44 @@ func Open(file string, lim Limits) (*Reader, error) {
 		_ = f.Close()
 		return nil, err
 	}
-	if lim.MaxEntries == 0 || lim.MaxTotalSize == 0 || lim.MaxEntrySize == 0 || lim.MaxNameLength == 0 {
+	if lim.MaxEntries <= 0 || lim.MaxTotalSize <= 0 || lim.MaxEntrySize <= 0 || lim.MaxNameLength <= 0 {
 		lim = DefaultLimits()
 	}
 	if len(zr.File) > lim.MaxEntries {
 		_ = f.Close()
 		return nil, fmt.Errorf("archive has %d entries, exceeding limit %d", len(zr.File), lim.MaxEntries)
 	}
-	var total int64
+	var total uint64
+	seen := make(map[string]struct{}, len(zr.File))
 	for _, e := range zr.File {
-		total += int64(e.UncompressedSize64)
-		if int64(e.UncompressedSize64) > lim.MaxEntrySize {
+		if len(e.Name) > lim.MaxNameLength {
+			_ = f.Close()
+			return nil, fmt.Errorf("entry name too long: %d chars", len(e.Name))
+		}
+		if _, err := entryName(e.Name); err != nil {
+			_ = f.Close()
+			return nil, err
+		}
+		if _, exists := seen[e.Name]; exists {
+			_ = f.Close()
+			return nil, fmt.Errorf("archive contains duplicate entry %q", e.Name)
+		}
+		seen[e.Name] = struct{}{}
+		// #nosec G115 -- limits were normalized to strictly positive values above.
+		if e.UncompressedSize64 > uint64(lim.MaxEntrySize) {
 			_ = f.Close()
 			return nil, fmt.Errorf("entry %q decompresses to %d bytes, exceeding limit %d",
 				e.Name, e.UncompressedSize64, lim.MaxEntrySize)
 		}
+		// #nosec G115 -- limits were normalized to strictly positive values above.
+		if e.UncompressedSize64 > uint64(lim.MaxTotalSize)-total {
+			_ = f.Close()
+			return nil, fmt.Errorf("archive decompresses beyond total size limit %d", lim.MaxTotalSize)
+		}
+		total += e.UncompressedSize64
 	}
-	if total > lim.MaxTotalSize {
+	// #nosec G115 -- limits were normalized to strictly positive values above.
+	if total > uint64(lim.MaxTotalSize) {
 		_ = f.Close()
 		return nil, fmt.Errorf("archive decompresses to %d bytes total, exceeding limit %d",
 			total, lim.MaxTotalSize)
@@ -225,5 +249,12 @@ func (r *Reader) ReadEntry(name string) ([]byte, error) {
 		return nil, err
 	}
 	defer f.Close()
-	return io.ReadAll(io.LimitReader(f, r.lim.MaxEntrySize+1))
+	data, err := io.ReadAll(io.LimitReader(f, r.lim.MaxEntrySize+1))
+	if err != nil {
+		return nil, err
+	}
+	if int64(len(data)) > r.lim.MaxEntrySize {
+		return nil, fmt.Errorf("entry %q exceeds limit %d while reading", name, r.lim.MaxEntrySize)
+	}
+	return data, nil
 }

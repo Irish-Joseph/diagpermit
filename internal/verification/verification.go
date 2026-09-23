@@ -80,18 +80,9 @@ func Verify(path string) (*Report, error) {
 		add("archive-structure", true, "all required entries present")
 	}
 
-	// Path safety of every entry.
-	badNames := []string{}
-	for _, n := range zr.Names() {
-		if strings.Contains(n, "..") || strings.HasPrefix(n, "/") || strings.Contains(n, "\\") {
-			badNames = append(badNames, n)
-		}
-	}
-	if len(badNames) > 0 {
-		add("path-safety", false, "unsafe entry names: "+strings.Join(badNames, ", "))
-	} else {
-		add("path-safety", true, "all entry names are safe relative paths")
-	}
+	// safezip.Open rejects unsafe and duplicate entry names before any
+	// content is read.
+	add("path-safety", true, "all entry names are safe, unique relative paths")
 
 	readJSON := func(name string, v any) error {
 		b, err := zr.ReadEntry(name)

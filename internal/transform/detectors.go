@@ -16,7 +16,7 @@ var (
 // output produces no further matches, so reports stay accurate and
 // repeated application (e.g. redact-test on already redacted text) is
 // stable.
-func defaultDetectors() map[string]*Detector {
+func defaultDetectors(pseudo *PseudoMap) map[string]*Detector {
 	d := map[string]*Detector{}
 
 	d["pem_private_key"] = &Detector{
@@ -111,7 +111,8 @@ func defaultDetectors() map[string]*Detector {
 			if g[3] != "" {
 				suffix = ":" + g[3]
 			}
-			return g[0] + "://" + userinfo + engineHost(host) + suffix
+			label, _ := pseudo.For("host|" + host)
+			return g[0] + "://" + userinfo + "host-" + label + suffix
 		},
 	}
 
@@ -120,7 +121,7 @@ func defaultDetectors() map[string]*Detector {
 		Category: "MAC addresses",
 		Re:       regexp.MustCompile(`\b([0-9A-Fa-f]{2}(?:[:-][0-9A-Fa-f]{2}){5})\b`),
 		fn: func(full string, _ []string) string {
-			if p, ok := pseudoFor("mac|mac|" + full); ok {
+			if p, ok := pseudo.For("mac|mac|" + full); ok {
 				return "mac-" + p
 			}
 			return "mac-a"
@@ -136,7 +137,7 @@ func defaultDetectors() map[string]*Detector {
 			if rePseudoUser.MatchString(g[0]) {
 				return full // already pseudonymized
 			}
-			if localPseudo, ok := pseudoFor(emailKey(g[0])); ok {
+			if localPseudo, ok := pseudo.For(emailKey(g[0])); ok {
 				return "user-" + localPseudo + "@" + g[1]
 			}
 			return "user-a@" + g[1]
@@ -151,7 +152,7 @@ func defaultDetectors() map[string]*Detector {
 		Category: "IPv6 addresses",
 		Re:       regexp.MustCompile(`\b(?:[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4}){3,7})\b`),
 		fn: func(full string, _ []string) string {
-			if p, ok := pseudoFor("host|" + full); ok {
+			if p, ok := pseudo.For("host|" + full); ok {
 				return "host-" + p
 			}
 			return "host-a"
@@ -168,7 +169,7 @@ func defaultDetectors() map[string]*Detector {
 		Re:       regexp.MustCompile(`(?:^|[\s'"=:,()>])((?:` + ipv4Octet + `\.){3}` + ipv4Octet + `)(?:$|[\s'"=:,;<>])`),
 		fn: func(full string, g []string) string {
 			label := "host-a"
-			if p, ok := pseudoFor("host|" + g[0]); ok {
+			if p, ok := pseudo.For("host|" + g[0]); ok {
 				label = "host-" + p
 			}
 			// Preserve the surrounding boundary characters.
@@ -200,40 +201,5 @@ func prefixBefore(s, sep string) string {
 }
 
 var _ = prefixBefore
-
-// The detectors above reference a process-wide pseudo registry bound to
-// the current engine. Because Go closures cannot easily carry the engine,
-// the default detectors use a package-level binding that NewEngine sets.
-// This is safe: the reference implementation runs one engine at a time per
-// artifact in a single goroutine (the collection pipeline is sequential
-// over files).
-
-var (
-	currentPseudo *PseudoMap
-)
-
-func engineHost(v string) string {
-	if currentPseudo == nil {
-		return "host-a"
-	}
-	p, _ := currentPseudo.For("host|" + v)
-	return "host-" + p
-}
-
-func nextPseudo() string {
-	if currentPseudo == nil {
-		return "a"
-	}
-	return currentPseudo.Next("mac")
-}
-
-var _ = nextPseudo
-
-func pseudoFor(key string) (string, bool) {
-	if currentPseudo == nil {
-		return "", false
-	}
-	return currentPseudo.For(key)
-}
 
 func emailKey(local string) string { return "em|user|" + local }

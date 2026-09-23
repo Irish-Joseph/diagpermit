@@ -226,8 +226,18 @@ func (e *Engine) Run(ctx context.Context, req *protocol.DiagnosticRequest, plan 
 		res := collector.Collect(cctx)
 		completed := time.Now().UTC()
 
-		// Enforce total byte budget: drop files that would exceed it.
-		for path, f := range res.Files {
+		// Enforce total byte budget in stable path order and report only
+		// bytes that were actually accepted into the artifact.
+		acceptedBytes := int64(0)
+		for _, path := range keys(res.Files) {
+			f := res.Files[path]
+			if _, exists := files[path]; exists {
+				res.Status = protocol.StatusFailed
+				res.Message = "collector produced a duplicate artifact path"
+				*warnings = append(*warnings, fmt.Sprintf("capability %q: dropping duplicate path %s", cap, path))
+				delete(res.Files, path)
+				continue
+			}
 			if total+int64(len(f.Content)) > budget {
 				res.Status = protocol.StatusSizeLimitExceeded
 				if res.Message == "" {
@@ -238,8 +248,11 @@ func (e *Engine) Run(ctx context.Context, req *protocol.DiagnosticRequest, plan 
 				continue
 			}
 			files[path] = f
-			total += int64(len(f.Content))
+			fileBytes := int64(len(f.Content))
+			total += fileBytes
+			acceptedBytes += fileBytes
 		}
+		res.Bytes = acceptedBytes
 
 		report.Results = append(report.Results, protocol.CollectorResult{
 			Capability:       cap,

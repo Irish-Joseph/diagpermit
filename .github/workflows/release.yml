@@ -10,46 +10,36 @@ permissions:
 
 jobs:
   release:
-    name: Build & publish ({{ matrix.os }})
-    strategy:
-      matrix:
-        include:
-          - goos: linux
-            goarch: amd64
-          - goos: linux
-            goarch: arm64
-          - goos: windows
-            goarch: amd64
-          - goos: darwin
-            goarch: arm64
-          - goos: darwin
-            goarch: amd64
+    name: Build and publish release
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: "1.22"
+          go-version-file: go.mod
       - name: Build
         env:
-          GOOS: ${{ matrix.goos }}
-          GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: "0"
         run: |
           mkdir -p dist
-          ext=""
-          [ "${{ matrix.goos }}" = "windows" ] && ext=".exe"
-          go build -trimpath -ldflags "-s -w -X main.CLIVersion=${GITHUB_REF_NAME#v}" \
-            -o "diagx-${{ matrix.goos }}-${{ matrix.goarch }}${ext}" ./cmd/diagx
+          for target in linux/amd64 linux/arm64 windows/amd64 darwin/amd64 darwin/arm64; do
+            goos=${target%/*}
+            goarch=${target#*/}
+            ext=""
+            [ "$goos" = "windows" ] && ext=".exe"
+            GOOS="$goos" GOARCH="$goarch" go build -trimpath \
+              -ldflags "-s -w -X main.CLIVersion=${GITHUB_REF_NAME#v}" \
+              -o "dist/diagx-${goos}-${goarch}${ext}" ./cmd/diagx
+          done
       - name: Checksums
-        run: |
-          ( cd dist && sha256sum * > SHA256SUMS )
+        working-directory: dist
+        run: sha256sum diagx-* > SHA256SUMS
       - name: SBOM (CycloneDX)
         run: |
-          go install github.com/CycloneDX/cyclonedx-gomod@latest
-          cyclonedx-gomod . -json -output dist/bom.json || true
+          go install github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod@v1.12.0
+          cyclonedx-gomod mod -json -output dist/bom.json
       - name: Publish
         uses: softprops/action-gh-release@v2
-        if: matrix.goos == 'linux' && matrix.goarch == 'amd64'
         with:
           files: |
             dist/*

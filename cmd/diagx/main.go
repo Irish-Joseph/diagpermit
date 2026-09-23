@@ -11,12 +11,14 @@ import (
 	"github.com/diagx/diagx/pkg/protocol"
 )
 
-// CLI version. Independent from the protocol version (spec section 29).
-const CLIVersion = "0.1.0"
+// CLIVersion is independent from the protocol version (spec section 29).
+// Release builds override it with -ldflags "-X main.CLIVersion=<version>".
+var CLIVersion = "0.1.0-dev"
 
 var rootCmd = &cobra.Command{
-	Use:   "diagx",
-	Short: "Consent-driven software diagnostics",
+	Use:     "diagx",
+	Short:   "Consent-driven software diagnostics",
+	Version: versionString(),
 	Long: `DiagX is an open protocol and CLI for consent-driven software diagnostics.
 
 A requester declares what troubleshooting information it needs.
@@ -33,6 +35,10 @@ deliberate action outside this tool.`,
 
 func versionString() string {
 	return fmt.Sprintf("diagx CLI %s (protocol %s)", CLIVersion, protocol.ProtocolVersion)
+}
+
+func init() {
+	rootCmd.SetVersionTemplate("{{.Version}}\n")
 }
 
 func main() {

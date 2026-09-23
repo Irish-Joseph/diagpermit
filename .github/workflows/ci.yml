@@ -12,16 +12,16 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        go: ["1.22"]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: ${{ matrix.go }}
+          go-version-file: go.mod
       - name: Vet
         run: go vet ./...
       - name: Format
+        shell: bash
         run: |
           out=$(gofmt -l .)
           if [ -n "$out" ]; then echo "gofmt needed:"; echo "$out"; exit 1; fi
@@ -39,11 +39,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: "1.22"
+          go-version-file: go.mod
       - name: gosec (security-oriented lint)
         run: |
-          go install github.com/securego/gosec/v2/cmd/gosec@latest
-          gosec -exclude-generated ./... || true
+          go install github.com/securego/gosec/v2/cmd/gosec@v2.29.0
+          gosec -exclude-generated ./...
 
   codeql:
     name: CodeQL

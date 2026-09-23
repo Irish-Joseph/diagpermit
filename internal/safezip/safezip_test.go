@@ -81,17 +81,37 @@ func TestOpenRejectsTraversalEntries(t *testing.T) {
 	}
 	zw.Close()
 	f.Close()
-	if r0, err := Open(p, DefaultLimits()); err == nil {
-		_ = r0.Close()
-		// Open may succeed structurally; reading must fail.
-		r, err := Open(p, DefaultLimits())
-		if err == nil {
-			_, err = r.ReadEntry("../evil.txt")
-			_ = r.Close()
+	if r, err := Open(p, DefaultLimits()); err == nil {
+		_ = r.Close()
+		t.Fatal("archive with traversal entry must be rejected")
+	}
+}
+
+func TestOpenRejectsDuplicateEntries(t *testing.T) {
+	p := filepath.Join(t.TempDir(), "duplicate.zip")
+	f, err := os.Create(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	zw := zip.NewWriter(f)
+	for i := 0; i < 2; i++ {
+		w, err := zw.Create("data/same.txt")
+		if err != nil {
+			t.Fatal(err)
 		}
-		if err == nil {
-			t.Fatal("traversal entry must be unreadable")
+		if _, err := w.Write([]byte("content")); err != nil {
+			t.Fatal(err)
 		}
+	}
+	if err := zw.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if r, err := Open(p, DefaultLimits()); err == nil {
+		_ = r.Close()
+		t.Fatal("archive with duplicate entries must be rejected")
 	}
 }
 

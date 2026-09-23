@@ -76,7 +76,7 @@ var initCmd = &cobra.Command{
 		if _, err := os.Stat(configDefault()); err == nil {
 			return fmt.Errorf("%s already exists; refusing to overwrite", configDefault())
 		}
-		if err := os.WriteFile(configDefault(), []byte(initTemplate), 0o644); err != nil {
+		if err := os.WriteFile(configDefault(), []byte(initTemplate), 0o600); err != nil {
 			return err
 		}
 		fmt.Fprintln(cmd.OutOrStdout(), "Created "+configDefault())

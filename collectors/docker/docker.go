@@ -82,6 +82,7 @@ func (c *Collector) Plan(cc *collection.Context) collection.PlanInfo {
 }
 
 func (c *Collector) run(ctx context.Context, args ...string) (string, error) {
+	// #nosec G204 -- every argument comes from a fixed capability switch.
 	cmd := exec.CommandContext(ctx, "docker", args...)
 	var out bytes.Buffer
 	cmd.Stdout = &out

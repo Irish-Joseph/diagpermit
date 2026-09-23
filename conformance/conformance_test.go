@@ -272,11 +272,14 @@ func TestVector05CorruptedManifest(t *testing.T) {
 func TestVector06InvalidPath(t *testing.T) {
 	dir := vecDir(t, "06-invalid-path")
 	// Ensure a "secret" exists outside the root to prove it is not read.
-	secret := filepath.Join("..", "secret-outside-root.txt")
+	secret, err := filepath.Abs(filepath.Join(filepath.Dir(dir), "secret-outside-root.txt"))
+	if err != nil {
+		t.Fatal(err)
+	}
 	if err := os.WriteFile(secret, []byte("SECRET-MARKER"), 0o644); err != nil {
 		t.Fatal(err)
 	}
-	defer os.Remove(secret)
+	t.Cleanup(func() { _ = os.Remove(secret) })
 	out, _ := runVector(t, dir)
 	checkStatus(t, dir, out)
 	if b, err := os.ReadFile(filepath.Join(dir, "vector-output.diagnostic")); err == nil {

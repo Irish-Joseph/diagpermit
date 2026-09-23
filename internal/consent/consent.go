@@ -57,13 +57,14 @@ func ReviewFor(req *protocol.DiagnosticRequest) Review {
 // Prompter asks the user questions. The default implementation reads
 // from in and writes to out.
 type Prompter struct {
-	In  io.Reader
-	Out io.Writer
+	In     io.Reader
+	Out    io.Writer
+	reader *bufio.Reader
 }
 
 // NewPrompter over in/out streams.
 func NewPrompter(in io.Reader, out io.Writer) *Prompter {
-	return &Prompter{In: in, Out: out}
+	return &Prompter{In: in, Out: out, reader: bufio.NewReader(in)}
 }
 
 func (p *Prompter) writeln(format string, args ...any) {
@@ -77,8 +78,13 @@ func (p *Prompter) Confirm(question string, defaultYes bool) (bool, error) {
 	if !defaultYes {
 		suffix = "[y/N] "
 	}
-	p.Out.Write([]byte(question + " " + suffix))
-	line, err := bufio.NewReader(p.In).ReadString('\n')
+	if _, err := p.Out.Write([]byte(question + " " + suffix)); err != nil {
+		return false, err
+	}
+	if p.reader == nil {
+		p.reader = bufio.NewReader(p.In)
+	}
+	line, err := p.reader.ReadString('\n')
 	if err != nil && line == "" {
 		return false, err
 	}
@@ -195,6 +201,8 @@ func Build(ctx context.Context, req *protocol.DiagnosticRequest, mode string, p 
 				decision.Decisions[id] = protocol.Decision{State: protocol.ConsentDenied}
 			}
 		}
+	default:
+		return nil, nil, nil, fmt.Errorf("unsupported consent mode %q", mode)
 	}
 	decisions = decision.Decisions
 

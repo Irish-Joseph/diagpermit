@@ -14,6 +14,8 @@ import (
 // Analyze inspects the collected data files and returns findings.
 func Analyze(files map[string][]byte) []protocol.Finding {
 	var out []protocol.Finding
+	stopped := false
+	unhealthy := false
 
 	// Docker container state.
 	if raw, ok := files["data/docker/containers.json"]; ok {
@@ -25,31 +27,32 @@ func Analyze(files map[string][]byte) []protocol.Finding {
 			} `json:"containers"`
 		}
 		if err := json.Unmarshal(raw, &c); err == nil {
-			stopped := 0
 			for _, ct := range c.Containers {
 				state := strings.ToLower(ct.State)
 				if state == "exited" || state == "dead" || state == "stopped" || state == "created" {
-					stopped++
-					out = append(out, protocol.Finding{
-						ID:       "DOCKER_CONTAINER_STOPPED",
-						Severity: protocol.SeverityWarning,
-						Summary:  "Docker container is not running.",
-						Evidence: []string{"data/docker/containers.json"},
-					})
-					break
+					stopped = true
 				}
-				if ct.Health == "unhealthy" {
-					out = append(out, protocol.Finding{
-						ID:       "DOCKER_CONTAINER_UNHEALTHY",
-						Severity: protocol.SeverityWarning,
-						Summary:  "Docker container reports unhealthy.",
-						Evidence: []string{"data/docker/containers.json"},
-					})
-					break
+				if strings.EqualFold(ct.Health, "unhealthy") {
+					unhealthy = true
 				}
 			}
-			_ = stopped
 		}
+	}
+	if stopped {
+		out = append(out, protocol.Finding{
+			ID:       "DOCKER_CONTAINER_STOPPED",
+			Severity: protocol.SeverityWarning,
+			Summary:  "Docker container is not running.",
+			Evidence: []string{"data/docker/containers.json"},
+		})
+	}
+	if unhealthy {
+		out = append(out, protocol.Finding{
+			ID:       "DOCKER_CONTAINER_UNHEALTHY",
+			Severity: protocol.SeverityWarning,
+			Summary:  "Docker container reports unhealthy.",
+			Evidence: []string{"data/docker/containers.json"},
+		})
 	}
 
 	// Log signals.
@@ -58,7 +61,6 @@ func Analyze(files map[string][]byte) []protocol.Finding {
 		logs = string(raw)
 	}
 	refused := containsFold(logs, "connection refused") ||
-		containsFold(logs, "connection refused") ||
 		containsFold(logs, "ECONNREFUSED") ||
 		containsFold(logs, "could not connect")
 
@@ -72,22 +74,6 @@ func Analyze(files map[string][]byte) []protocol.Finding {
 	}
 
 	// Cross-signal: stopped container + refused connection.
-	stopped := false
-	if raw, ok := files["data/docker/containers.json"]; ok {
-		var c struct {
-			Containers []struct {
-				State string `json:"state"`
-			} `json:"containers"`
-		}
-		if err := json.Unmarshal(raw, &c); err == nil {
-			for _, ct := range c.Containers {
-				s := strings.ToLower(ct.State)
-				if s == "exited" || s == "dead" || s == "stopped" {
-					stopped = true
-				}
-			}
-		}
-	}
 	if refused && stopped {
 		out = append(out, protocol.Finding{
 			ID:       "DATABASE_CONNECTIVITY_FAILURE",

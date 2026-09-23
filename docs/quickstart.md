@@ -2,7 +2,7 @@
 
 ## 1. Install
 
-Build from source (Go 1.22+):
+Build from source (Go 1.27.1+):
 
 ```bash
 go build -o diagx ./cmd/diagx
@@ -111,8 +111,10 @@ reminds you that integrity is **not** a privacy guarantee.
 
 ```bash
 cd examples/broken-demo-app
-docker compose up -d api          # the database stays stopped
-# stop it: docker compose up -d api (db is configured not to start)
+docker compose up -d
+docker compose stop database
+mkdir -p logs
+docker logs diagshop-api > logs/app.log
 diagx plan && diagx collect --yes
 diagx inspect support-*.diagnostic
 ```
