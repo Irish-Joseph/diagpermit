@@ -7,6 +7,7 @@ package runtime
 
 import (
 	"context"
+	"fmt"
 	"os/exec"
 	"runtime"
 	"strings"
@@ -41,10 +42,25 @@ var probes = map[string]probe{
 }
 
 // Collector probes installed runtime versions.
-type Collector struct{}
+type Collector struct {
+	lookPath func(string) (string, error)
+	run      func(context.Context, string, ...string) (string, error)
+}
 
 // New returns the runtime collector.
-func New() *Collector { return &Collector{} }
+func New() *Collector {
+	return &Collector{lookPath: exec.LookPath, run: runCommand}
+}
+
+func runCommand(ctx context.Context, bin string, args ...string) (string, error) {
+	// #nosec G204 -- bin and args come only from the fixed probes table above.
+	cmd := exec.CommandContext(ctx, bin, args...)
+	var out strings.Builder
+	cmd.Stdout = &out
+	cmd.Stderr = &out // java -version writes to stderr
+	err := cmd.Run()
+	return out.String(), err
+}
 
 func (c *Collector) ID() string      { return CollectorID }
 func (c *Collector) Version() string { return collection.CollectorVersion }
@@ -85,7 +101,7 @@ func (c *Collector) Collect(cc *collection.Context) collection.Result {
 	}
 	bin := "none"
 	for _, b := range p.binaries {
-		if _, err := exec.LookPath(b); err == nil {
+		if _, err := c.lookPath(b); err == nil {
 			bin = b
 			break
 		}
@@ -99,22 +115,20 @@ func (c *Collector) Collect(cc *collection.Context) collection.Result {
 
 	ctx, cancel := context.WithTimeout(cc.Ctx, 10*time.Second)
 	defer cancel()
-	// #nosec G204 -- bin and args come only from the fixed probes table above.
-	cmd := exec.CommandContext(ctx, bin, p.args...)
-	var out strings.Builder
-	cmd.Stdout = &out
-	cmd.Stderr = &out // java -version writes to stderr
-	runErr := cmd.Run()
+	out, runErr := c.run(ctx, bin, p.args...)
 	if runErr != nil && ctx.Err() == context.DeadlineExceeded {
 		return collection.Result{Status: "timed_out", Message: "version probe timed out"}
 	}
 	if runErr != nil {
 		// Some runtimes return non-zero for --version (java).
-		if strings.TrimSpace(out.String()) == "" {
+		if strings.TrimSpace(out) == "" {
 			return collection.Result{Status: "failed", Message: "version probe failed: " + runErr.Error()}
 		}
 	}
-	info.Version = firstLine(out.String())
+	if strings.TrimSpace(out) == "" {
+		return collection.Result{Status: "failed", Message: fmt.Sprintf("version probe for %s returned no output", bin)}
+	}
+	info.Version = firstLine(out)
 	return resultFile(runtimeName(cc.Capability), info, "success", "")
 }
 

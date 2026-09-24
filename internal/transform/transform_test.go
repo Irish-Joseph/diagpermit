@@ -136,7 +136,7 @@ func TestRedactIPv6(t *testing.T) {
 
 func TestRedactHome(t *testing.T) {
 	out, _ := applyFile(t, "home.log")
-	containsNone(t, out, "home", "/home/josep", "/Users/josep", "Users\\josep")
+	containsNone(t, out, "home", "/home/example-user", "/Users/example-user", "Users\\example-user")
 	containsAll(t, out, "home", "/home/user/work/app.log", "/Users/user/Library/Logs/app.log", `C:\Users\user\AppData`)
 }
 
@@ -167,7 +167,7 @@ func TestReportLeaksNothing(t *testing.T) {
 	secrets := []string{
 		"dozjgNryP4J3jVmNHl0w5N", "AbCdEfGhIjKlMnOpQrSt",
 		"AKIAIOSFODNN7EXAMPLE", "Sup3rS3cret", "alice.smith",
-		"192.168.1.20", "AA:BB:CC:DD:EE:FF", "josep",
+		"192.168.1.20", "AA:BB:CC:DD:EE:FF", "example-user",
 	}
 	entries, err := os.ReadDir(corpusDir)
 	if err != nil {

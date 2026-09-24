@@ -29,10 +29,13 @@ const (
 )
 
 // Collector collects basic Docker state.
-type Collector struct{}
+type Collector struct {
+	lookPath func(string) (string, error)
+	runFn    func(context.Context, ...string) (string, error)
+}
 
 // New returns the docker collector.
-func New() *Collector { return &Collector{} }
+func New() *Collector { return &Collector{lookPath: exec.LookPath} }
 
 func (c *Collector) ID() string      { return CollectorID }
 func (c *Collector) Version() string { return collection.CollectorVersion }
@@ -82,6 +85,9 @@ func (c *Collector) Plan(cc *collection.Context) collection.PlanInfo {
 }
 
 func (c *Collector) run(ctx context.Context, args ...string) (string, error) {
+	if c.runFn != nil {
+		return c.runFn(ctx, args...)
+	}
 	// #nosec G204 -- every argument comes from a fixed capability switch.
 	cmd := exec.CommandContext(ctx, "docker", args...)
 	var out bytes.Buffer
@@ -93,7 +99,7 @@ func (c *Collector) run(ctx context.Context, args ...string) (string, error) {
 
 // Collect implements collection.Collector.
 func (c *Collector) Collect(cc *collection.Context) collection.Result {
-	if _, err := exec.LookPath("docker"); err != nil {
+	if _, err := c.lookPath("docker"); err != nil {
 		return collection.Result{Status: "failed", Message: "docker CLI not found on this system"}
 	}
 	ctx, cancel := context.WithTimeout(cc.Ctx, 30*time.Second)
