@@ -2,7 +2,7 @@
 // approved capabilities of an EffectiveDisclosurePlan through the typed
 // collector registry, enforcing the request policy (time and size limits,
 // network policy) and producing a CollectionReport plus the raw collected
-// files (spec sections 17 and 18).
+// files.
 package collection
 
 import (
@@ -19,7 +19,7 @@ import (
 const CollectorVersion = "0.1.0"
 
 // DeclaredCapability is a capability a collector offers, with the
-// requirements it declares (spec section 18).
+// requirements it declares.
 type DeclaredCapability struct {
 	ID             string
 	Description    string
@@ -74,7 +74,7 @@ func (c *Context) AddWarning(format string, args ...any) {
 	}
 }
 
-// Collector is the typed collector interface (spec section 18).
+// Collector is the typed collector interface.
 // Collectors expose capabilities, never arbitrary behaviour: there is no
 // free-form command field in V0.1.
 type Collector interface {
@@ -268,7 +268,7 @@ func (e *Engine) Run(ctx context.Context, req *protocol.DiagnosticRequest, plan 
 	}
 	report.CompletedAt = time.Now().UTC()
 	// Record denied and forbidden capabilities too, so the collection
-	// report shows the complete picture (spec section 17).
+	// report shows the complete picture.
 	for _, cap := range sorted(plan.Denied) {
 		report.Results = append(report.Results, protocol.CollectorResult{
 			Capability:  cap,

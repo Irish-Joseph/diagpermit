@@ -18,7 +18,7 @@
 DiagPermit is an open protocol and reference CLI for **consent-driven diagnostic exchange**. A support team declares exactly what it needs, the user reviews and approves those capabilities, collection and privacy transformations happen locally, and the resulting artifact records what was requested, approved, collected, and transformed.
 
 > [!IMPORTANT]
-> DiagPermit is an early-stage project. The protocol and CLI may evolve before the first stable release. See [TRADEMARKS.md](TRADEMARKS.md) and [ROADMAP.md](ROADMAP.md).
+> DiagPermit is an early-stage project. The protocol and CLI may evolve before the first stable release. See [TRADEMARKS.md](TRADEMARKS.md).
 
 ## Why DiagPermit?
 
@@ -165,7 +165,6 @@ cmd/diagpermit/     CLI commands
 collectors/         Typed system, runtime, application, and Docker collectors
 internal/           Consent, collection, transformation, packaging, and verification
 pkg/protocol/       Public protocol types and canonical JSON hashing
-spec/               JSON schemas, RFCs, and protocol examples
 conformance/        Portable protocol test vectors
 testdata/           Synthetic secret corpus—never real user data
 examples/           Demonstration applications
@@ -191,7 +190,7 @@ DiagPermit is not an observability platform, monitoring agent, ticketing system,
 
 ## Contributing
 
-The project is open for review and early contributions. Start with [CONTRIBUTING.md](CONTRIBUTING.md), follow the [Code of Conduct](CODE_OF_CONDUCT.md), and use the RFC process for protocol changes. Never submit real credentials, customer logs, or employer data.
+The project is open for review and early contributions. Start with [CONTRIBUTING.md](CONTRIBUTING.md), follow the [Code of Conduct](CODE_OF_CONDUCT.md), and open an issue before proposing protocol changes. Never submit real credentials, customer logs, or employer data.
 
 Security vulnerabilities must be reported privately as described in [SECURITY.md](SECURITY.md).
 

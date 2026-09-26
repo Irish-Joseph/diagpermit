@@ -1,5 +1,5 @@
 // Package transform implements the DiagPermit privacy transformation engine
-// (spec sections 12, 14, 15, 16).
+// for diagnostic content.
 //
 // Design notes:
 //
@@ -15,7 +15,7 @@
 //     only. It never contains the original sensitive values.
 //
 //   - Pseudonymization is stable within one artifact via a random
-//     per-artifact salt (spec section 15): the same value always maps to
+//     per-artifact salt: the same value always maps to
 //     the same pseudonym in a given artifact, and different values map to
 //     different pseudonyms with overwhelming probability.
 package transform
@@ -31,7 +31,7 @@ import (
 // Action is one privacy transformation.
 type Action string
 
-// Supported transformations (spec section 12).
+// Supported transformations.
 const (
 	ActionDrop         Action = "drop"
 	ActionMask         Action = "mask"
@@ -183,7 +183,7 @@ func DefaultRuleset() Ruleset {
 
 // Engine applies a ruleset to content. One Engine instance is created per
 // diagnostic artifact so that stable pseudonyms stay consistent across
-// every file of that artifact (spec section 15).
+// every file of that artifact.
 type Engine struct {
 	ruleset Ruleset
 	det     map[string]*Detector

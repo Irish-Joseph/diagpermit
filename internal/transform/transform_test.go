@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-// The synthetic secret corpus (spec section 42). These redaction
+// The synthetic secret corpus. These redaction
 // regression tests guarantee that known synthetic patterns are removed,
 // that benign content is preserved, and that the transformation report
 // never contains original values.
@@ -162,7 +162,7 @@ func TestBenignUntouched(t *testing.T) {
 }
 
 // TestReportLeaksNothing guarantees the transformation report never
-// contains original secret values (spec section 16).
+// contains original secret values.
 func TestReportLeaksNothing(t *testing.T) {
 	secrets := []string{
 		"dozjgNryP4J3jVmNHl0w5N", "AbCdEfGhIjKlMnOpQrSt",
@@ -197,7 +197,7 @@ func TestReportLeaksNothing(t *testing.T) {
 }
 
 // TestStablePseudonymization guarantees the same value maps to the same
-// pseudonym within one artifact (spec section 15).
+// pseudonym within one artifact.
 func TestStablePseudonymization(t *testing.T) {
 	content := []byte("a 192.168.1.20 b 192.168.1.20 c 10.0.0.5 d")
 	e := newTestEngine(t)

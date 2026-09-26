@@ -4,7 +4,7 @@ import (
 	"crypto/sha256"
 )
 
-// PseudoMap provides stable per-artifact pseudonyms (spec section 15).
+// PseudoMap provides stable per-artifact pseudonyms.
 //
 // Given a salt (fresh random bytes per artifact) and an original value,
 // For returns the same label for the same value on every call within this

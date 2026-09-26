@@ -7,7 +7,7 @@ contributions are welcome.
 
 - Read [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) — be excellent to each other.
 - Read [GOVERNANCE.md](GOVERNANCE.md) for how decisions are made.
-- Protocol changes require an RFC (see `spec/rfcs/rfc-template.md`).
+- Discuss protocol changes in a GitHub issue before implementation.
 - Do **not** commit real credentials, real log excerpts or anything from an
   employer/client. The synthetic corpus in `testdata/secretcorpus/` must
   stay synthetic.

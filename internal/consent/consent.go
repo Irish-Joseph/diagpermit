@@ -1,5 +1,5 @@
 // Package consent implements the capability review and user consent step
-// (spec sections 5 and 6): it turns a DiagnosticRequest plus the user's
+// it turns a DiagnosticRequest plus the user's
 // decisions into a ConsentDecision and an immutable EffectiveDisclosurePlan.
 package consent
 
@@ -228,7 +228,7 @@ func Build(ctx context.Context, req *protocol.DiagnosticRequest, mode string, p 
 	sort.Strings(plan.NotRequested)
 
 	// Denying a capability the requester marked required must be
-	// recorded (spec section 5), regardless of consent mode.
+	// recorded, regardless of consent mode.
 	for _, id := range plan.Denied {
 		if cap, ok := req.Capabilities[id]; ok && cap.Requirement == protocol.RequirementRequiredForCase {
 			warnings = append(warnings, requiredDeniedWarning(id))

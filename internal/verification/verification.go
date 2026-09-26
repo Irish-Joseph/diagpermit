@@ -1,4 +1,4 @@
-// Package verification implements `diagpermit verify` (spec section 11):
+// Package verification implements `diagpermit verify`:
 //
 //	schema validity, manifest consistency, artifact hashes, disclosure-plan
 //	hash, request hash and archive structure.
@@ -247,7 +247,7 @@ func Verify(path string) (*Report, error) {
 }
 
 // PrivacyDisclaimer is printed after every verify/inspect output. It is
-// mandatory wording (spec section 13).
+// mandatory wording.
 const PrivacyDisclaimer = `Integrity proves the package has not changed according to the
 verification model. It does NOT prove that no sensitive information
 remains inside. Review diagnostic content before sharing it.`

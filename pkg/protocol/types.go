@@ -15,7 +15,7 @@ import (
 
 // ProtocolVersion is the version of the diagnostic exchange protocol
 // implemented by this package. The protocol version and the CLI version
-// are independent (see spec section 29).
+// are independent.
 const ProtocolVersion = "0.1"
 
 // RulesetDefault is the identifier of the built-in privacy transformation
@@ -184,7 +184,7 @@ type EffectiveDisclosurePlan struct {
 // CollectionStatus is the outcome status of one capability/collector run.
 type CollectionStatus string
 
-// Defined collection statuses (spec section 17).
+// Defined collection statuses.
 const (
 	StatusSuccess           CollectionStatus = "success"
 	StatusPartial           CollectionStatus = "partial"
@@ -254,7 +254,7 @@ type TransformationReport struct {
 	Files                  []string         `json:"files"`
 }
 
-// ManifestEntry records every file in the artifact (spec section 10).
+// ManifestEntry records every file in the artifact.
 type ManifestEntry struct {
 	Path             string `json:"path"`
 	MediaType        string `json:"mediaType"`
@@ -277,7 +277,7 @@ type Manifest struct {
 }
 
 // DisclosureReceipt is the disclosure receipt embedded in every artifact
-// (spec section 8). It answers: what was requested, what was approved,
+// It answers: what was requested, what was approved,
 // what actually ran, and what was ultimately packaged.
 type DisclosureReceipt struct {
 	ProtocolVersion    string                 `json:"protocolVersion"`
@@ -325,7 +325,7 @@ type ReceiptArtifact struct {
 // FindingSeverity is the severity of a deterministic finding.
 type FindingSeverity string
 
-// Initial severities (spec section 32).
+// Initial severities.
 const (
 	SeverityInfo    FindingSeverity = "info"
 	SeverityWarning FindingSeverity = "warning"
@@ -350,7 +350,7 @@ type Finding struct {
 	Evidence []string        `json:"evidence"`
 }
 
-// Artifact file names (logical layout, spec section 9).
+// Artifact file names in the logical layout.
 const (
 	ArtifactExt           = ".diagnostic"
 	FileManifest          = "manifest.json"

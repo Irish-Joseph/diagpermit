@@ -1,5 +1,5 @@
 // Package runtime implements the V0.1 runtime version collectors
-// (spec section 19): Python, Node.js, Java and Go versions. Collection
+// for Python, Node.js, Java and Go versions. Collection
 // happens only when the relevant binary is present on the local system.
 // Binaries are executed with a fixed argument array and a timeout — never
 // through a shell.

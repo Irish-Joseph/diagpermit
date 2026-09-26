@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-// FuzzApply is a security-sensitive fuzz target (spec section 41): the
+// FuzzApply is a security-sensitive fuzz target: the
 // transformation engine must never panic, crash or lose data silently on
 // arbitrary input, including binary junk, huge lines and crafted
 // Unicode.

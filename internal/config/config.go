@@ -1,6 +1,6 @@
 // Package config loads DiagPermit project configuration (diagpermit.yaml).
 // YAML is the human authoring format; the canonical representation is
-// JSON (spec section 38).
+// JSON.
 package config
 
 import (

@@ -5,7 +5,7 @@
 - **Bug reports / feature ideas:** open a GitHub issue.
 - **Security problems:** see SECURITY.md — use private vulnerability
   reporting, not public issues.
-- **Protocol discussions:** open an issue or start an RFC in `spec/rfcs/`.
+- **Protocol discussions:** open a GitHub issue.
 
 There is no commercial support tier in V0.1. The project is maintained by
 volunteers in their personal time and sustained by community sponsorship

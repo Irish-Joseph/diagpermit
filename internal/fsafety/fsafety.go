@@ -1,5 +1,5 @@
 // Package fsafety implements the filesystem protections required of
-// file-reading collectors (spec section 21): no symlink following by
+// file-reading collectors: no symlink following by
 // default, bounds on file sizes, refusal of special files, and a
 // mandatory allowed root.
 package fsafety
@@ -23,7 +23,7 @@ type Options struct {
 	// When set, the LAST MaxLines lines are kept (tail semantics) because
 	// recent lines are usually the relevant ones for troubleshooting.
 	MaxLines int
-	// FollowSymlinks is false by default (spec section 21).
+	// FollowSymlinks is false by default.
 	FollowSymlinks bool
 }
 

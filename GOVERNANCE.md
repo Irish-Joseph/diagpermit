@@ -6,13 +6,13 @@ DiagPermit is a community-governed, Apache-2.0 open-source project.
 
 ### Contributors
 
-Anyone who submits code, docs, issues or RFCs. No special rights required.
+Anyone who submits code, documentation, or issues. No special rights required.
 
 ### Maintainers
 
 - Merge pull requests after review.
 - Triage issues and assign priorities.
-- Shepherd RFCs to acceptance/rejection.
+- Shepherd protocol proposals to acceptance or rejection.
 - Release the CLI and publish release artifacts.
 - Handle security reports first-line.
 
@@ -23,9 +23,9 @@ is sufficient to start the discussion). Maintainers who are inactive for
 ## Decision process
 
 - **Code:** PR + review; maintainers merge.
-- **Protocol changes:** RFC process in `spec/rfcs/`. Accepted RFCs are
-  implemented and versioned (semantic versioning; breaking protocol changes
-  bump the major version).
+- **Protocol changes:** public issue discussion followed by maintainer review.
+  Accepted changes are implemented and versioned using semantic versioning;
+  breaking protocol changes bump the major version.
 - **Security decisions:** maintainers + the reporter, privately;
   vulnerability disclosure is never sold, suppressed or deprioritized by
   sponsors (see SECURITY.md and the sponsorship policy in SUPPORT.md).

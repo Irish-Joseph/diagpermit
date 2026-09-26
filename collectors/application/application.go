@@ -1,5 +1,5 @@
 // Package application implements the V0.1 application log collector
-// (spec section 19): a specifically configured file path with maximum
+// using a specifically configured file path with maximum
 // lines and maximum bytes. Filesystem safety (no symlink following,
 // bounds, regular files only) is enforced by the fsafety package.
 package application

@@ -11,7 +11,7 @@ import (
 	"github.com/Irish-Joseph/diagpermit/pkg/protocol"
 )
 
-// CLIVersion is independent from the protocol version (spec section 29).
+// CLIVersion is independent from the protocol version.
 // Release builds override it with -ldflags "-X main.CLIVersion=<version>".
 var CLIVersion = "0.1.0-dev"
 

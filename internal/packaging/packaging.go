@@ -1,6 +1,6 @@
 // Package packaging builds the diagnostic artifact: a ZIP-backed archive
-// with the canonical logical layout (spec section 9), the SHA-256
-// manifest (spec section 10) and the disclosure receipt (spec section 8).
+// with the canonical logical layout, the SHA-256 manifest and the
+// disclosure receipt.
 package packaging
 
 import (
@@ -365,7 +365,7 @@ func BuildRuleset(extra []ExtraDetector) (transform.Ruleset, error) {
 	return rs, nil
 }
 
-// ExtraDetector is a user-defined detector (spec section 12).
+// ExtraDetector is a user-defined detector.
 type ExtraDetector struct {
 	Name        string
 	Pattern     string

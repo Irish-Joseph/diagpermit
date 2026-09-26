@@ -1,5 +1,5 @@
 // Package conformance implements the DiagPermit V0.1 conformance suite
-// (spec section 30). Each numbered directory holds:
+// Each numbered directory holds:
 //
 //	input files        (request, consent, sample data)
 //	expected-*.json    (expected normalized results)

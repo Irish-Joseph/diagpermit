@@ -1,6 +1,6 @@
 // Package safezip provides defensive ZIP creation and reading for
 // diagnostic artifacts. It protects against path traversal (zip slip),
-// decompression bombs and oversized entries (spec sections 21 and 56).
+// decompression bombs and oversized entries.
 package safezip
 
 import (

@@ -1,4 +1,4 @@
-// Package system implements the V0.1 system collectors (spec section 19):
+// Package system implements the V0.1 system collectors:
 // operating-system name/version, architecture, CPU architecture, memory
 // summary and disk summary. Hostnames and usernames are deliberately NOT
 // collected.

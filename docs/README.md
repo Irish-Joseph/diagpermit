@@ -14,15 +14,12 @@ Use this page as the documentation map for DiagPermit.
 - [Threat model](threat-model.md) — protected assets, trust boundaries, threats, and mitigations.
 - [Vulnerability reporting](../SECURITY.md) — report security issues privately.
 
-## Protocol development
+## Protocol validation
 
-- [Schemas](../spec/schemas/) — machine-readable protocol 0.1 documents.
-- [RFC index](../spec/rfcs/README.md) — protocol design records and proposal process.
 - [Conformance vectors](../conformance/) — portable behavior and integrity fixtures.
 
 ## Project
 
-- [Roadmap](../ROADMAP.md)
 - [Contributing](../CONTRIBUTING.md)
 - [Governance](../GOVERNANCE.md)
 - [Support](../SUPPORT.md)

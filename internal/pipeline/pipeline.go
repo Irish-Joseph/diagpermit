@@ -1,6 +1,6 @@
 // Package pipeline wires the consent engine, collection engine,
 // transformation engine, analyzer and packager into the V0.1 workflow
-// (spec sections 1 and 84):
+// through the complete diagnostic workflow:
 //
 //	request → consent → plan → collection → transformation → package
 package pipeline

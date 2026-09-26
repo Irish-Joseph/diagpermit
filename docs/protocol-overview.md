@@ -26,13 +26,14 @@ DiagPermit protocol version 0.1 defines one artifact chain with six documents.
 Structured documents are hashed as `sha256:<hex>` of their **canonical
 JSON**: keys sorted bytewise, compact serialization, numbers preserved as
 written. This makes equivalent documents hash identically regardless of
-pretty-printing or property order (spec section 31).
+pretty-printing or property order.
 
 ## Versioning
 
 Protocol version and CLI version are independent (e.g. protocol `0.1`,
 CLI `0.4.2`). Both use semantic versioning. Implementations MUST reject
-unknown protocol versions. See the RFCs in `spec/rfcs/` for change rules.
+unknown protocol versions. Protocol changes are discussed publicly before
+implementation.
 
 ## Local-first
 

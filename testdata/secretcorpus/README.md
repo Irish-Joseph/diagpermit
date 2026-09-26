@@ -1,4 +1,4 @@
-# Synthetic secret test corpus (spec section 42).
+# Synthetic secret test corpus.
 #
 # Every value in this directory is FAKE and generated for testing.
 # Never commit real production credentials here.

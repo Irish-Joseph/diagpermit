@@ -9,9 +9,9 @@ Semantic Versioning.
 
 ### Added
 
-- DiagPermit protocol 0.1: DiagnosticRequest, Capability, ConsentDecision,
-  EffectiveDisclosurePlan, CollectorResult, TransformationReport, Manifest,
-  DisclosureReceipt and Finding schemas (`spec/schemas/`).
+- DiagPermit protocol 0.1 document model: DiagnosticRequest, Capability,
+  ConsentDecision, EffectiveDisclosurePlan, CollectorResult,
+  TransformationReport, Manifest, DisclosureReceipt and Finding.
 - Canonical JSON + SHA-256 document hashing (`pkg/protocol`).
 - CLI: `diagpermit init`, `validate`, `plan`, `collect`, `inspect`, `verify`,
   `redact-test`, `collectors`, `doctor`.
@@ -30,6 +30,5 @@ Semantic Versioning.
 - Synthetic secret test corpus (`testdata/secretcorpus/`).
 - Deterministic findings analyzer (e.g. DATABASE_CONNECTIVITY_FAILURE).
 - Demo application `examples/broken-demo-app` (DiagShop).
-- RFCs 0001–0007 in `spec/rfcs/`.
 - Documentation: README, quickstart, protocol overview, threat model,
   security policy.

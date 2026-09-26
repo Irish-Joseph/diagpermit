@@ -9,7 +9,7 @@ import (
 	"sort"
 )
 
-// Canonicalization (spec section 31): hashing structured documents
+// Canonicalization ensures hashing structured documents
 // requires deterministic serialization. Equivalently-valued documents must
 // produce the same hash regardless of whitespace, property ordering or
 // (within reason) number formatting.
