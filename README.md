@@ -65,6 +65,39 @@ The `.diagnostic` artifact is a bounded ZIP package containing collected data pl
 | Transformation report | Records which detectors ran and how many values changed—never the original values |
 | Manifest and receipt | Bind package contents, request, and plan with canonical SHA-256 hashes |
 
+## V0.2 local viewer — real application screenshots
+
+The following images were captured from the running DiagPermit application
+using the repository's synthetic DiagShop demonstration. They are original UI
+captures—not mockups, generated concepts, or customer data.
+
+### 1. Review the request and give explicit consent
+
+Required, optional, and forbidden capabilities are separated clearly before
+anything is collected. Network and shell controls remain visible.
+
+<p align="center">
+  <img src="docs/assets/diagpermit-v02-consent.png" alt="Original DiagPermit V0.2 interface showing the real request and consent workflow" width="100%">
+</p>
+
+### 2. Confirm the disclosure plan
+
+The approved, denied, and forbidden capabilities are frozen into a disclosure
+plan before local collection begins.
+
+<p align="center">
+  <img src="docs/assets/diagpermit-v02-plan.png" alt="Original DiagPermit V0.2 interface showing the immutable disclosure plan" width="100%">
+</p>
+
+### 3. Inspect and verify the diagnostic package
+
+The local viewer presents collector results, privacy transformations, findings,
+the disclosure receipt, safe file previews, and integrity verification.
+
+<p align="center">
+  <img src="docs/assets/diagpermit-v02-artifact.png" alt="Original DiagPermit V0.2 interface showing an integrity-verified diagnostic package" width="100%">
+</p>
+
 ### Real CLI output
 
 These screenshots were captured from the current CLI—not from a design mockup.
@@ -111,21 +144,6 @@ On Windows PowerShell, run the binary as `.\diagpermit.exe`.
 The viewer listens only on a random `127.0.0.1` port, uses a random local
 session token, loads no remote assets, and uploads nothing. It supports the
 complete request → consent → collect → transform → receipt → verify workflow.
-
-<p align="center">
-  <img src="docs/assets/diagpermit-v02-consent.png" alt="DiagPermit local viewer showing explicit capability consent and hard controls" width="100%">
-</p>
-
-<p align="center">
-  <img src="docs/assets/diagpermit-v02-plan.png" alt="DiagPermit immutable disclosure plan before local collection" width="100%">
-</p>
-
-<p align="center">
-  <img src="docs/assets/diagpermit-v02-artifact.png" alt="DiagPermit local viewer showing an integrity-verified diagnostic package" width="100%">
-</p>
-
-These are screenshots of the running V0.2 viewer using the repository's
-synthetic DiagShop example—not design mockups and not customer data.
 
 ### Create and review a request
 
