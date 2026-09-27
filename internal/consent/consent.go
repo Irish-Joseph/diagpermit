@@ -209,6 +209,10 @@ func Build(ctx context.Context, req *protocol.DiagnosticRequest, mode string, p 
 	plan := &protocol.EffectiveDisclosurePlan{
 		ProtocolVersion: protocol.ProtocolVersion,
 		RequestID:       req.RequestID(),
+		Approved:        []string{},
+		Denied:          []string{},
+		Forbidden:       []string{},
+		NotRequested:    []string{},
 		NetworkAccess:   req.Policy.NetworkAccess,
 		ShellExecution:  req.Policy.ArbitraryShellExecution,
 	}

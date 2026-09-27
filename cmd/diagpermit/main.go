@@ -1,5 +1,5 @@
 // Command diagpermit is the reference implementation of the DiagPermit
-// consent-driven diagnostic exchange protocol (V0.1).
+// consent-driven diagnostic exchange protocol.
 package main
 
 import (
@@ -13,7 +13,7 @@ import (
 
 // CLIVersion is independent from the protocol version.
 // Release builds override it with -ldflags "-X main.CLIVersion=<version>".
-var CLIVersion = "0.1.0-dev"
+var CLIVersion = "0.2.0-dev"
 
 var rootCmd = &cobra.Command{
 	Use:     "diagpermit",

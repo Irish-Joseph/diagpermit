@@ -14,21 +14,22 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/Irish-Joseph/diagpermit/internal/requestauth"
 	"github.com/Irish-Joseph/diagpermit/internal/safezip"
 	"github.com/Irish-Joseph/diagpermit/pkg/protocol"
 )
 
 // Check is one verification result line.
 type Check struct {
-	Name   string
-	OK     bool
-	Detail string
+	Name   string `json:"name"`
+	OK     bool   `json:"ok"`
+	Detail string `json:"detail"`
 }
 
 // Report is the full verification outcome.
 type Report struct {
-	Artifact string
-	Checks   []Check
+	Artifact string  `json:"artifact"`
+	Checks   []Check `json:"checks"`
 }
 
 // Verdict returns the top-level verdict.
@@ -229,8 +230,27 @@ func Verify(path string) (*Report, error) {
 		}
 	}
 
-	// 7. Optional signatures: none exist in V0.1; report their absence
-	// without failing.
+	// 7. Optional authenticated request envelope. Its payload must be the exact
+	// request bound into the receipt. Cryptographic identity verification needs
+	// a caller-supplied local trust store and is intentionally separate.
+	if zr.Find(protocol.FileRequestEnvelope) != nil {
+		envelope, readErr := zr.ReadEntry(protocol.FileRequestEnvelope)
+		result := requestauth.Verify(envelope, nil)
+		if readErr != nil || result.Request == nil || result.Status == requestauth.StatusInvalid {
+			add("request-envelope-binding", false, "authenticated request envelope is malformed")
+		} else {
+			envelopeHash, hashErr := protocol.HashDocument(result.Payload)
+			requestHash, requestHashErr := protocol.HashDocument(reqBytes)
+			if hashErr != nil || requestHashErr != nil || envelopeHash != requestHash {
+				add("request-envelope-binding", false, "DSSE payload does not match request.json")
+			} else {
+				add("request-envelope-binding", true, "DSSE payload matches request.json; identity requires local trust policy")
+			}
+		}
+	}
+
+	// Other optional attestations are reported without making a cryptographic
+	// authenticity claim.
 	sig := false
 	for _, n := range zr.Names() {
 		if strings.HasPrefix(n, protocol.DirAttestations+"/") && n != protocol.FileDisclosureReceipt {
@@ -238,7 +258,7 @@ func Verify(path string) (*Report, error) {
 		}
 	}
 	if sig {
-		add("signatures", true, "attestations present (see attestations/)")
+		add("signatures", true, "attestations present; requester authenticity requires a local trust store")
 	} else {
 		add("signatures", true, "no signatures present (optional in V0.1; request authenticity NOT VERIFIED)")
 	}

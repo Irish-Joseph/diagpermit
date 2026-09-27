@@ -34,7 +34,10 @@ JSON/YAML and remote URLs.
 | Manifest tampering | SHA-256 over every file; receipt hashes the manifest, request and plan; `diagpermit verify` recomputes all three. |
 | Request substitution / malicious request | Requests are validated; unknown protocol versions rejected; network disabled by default; collectors declare capabilities; unsigned requests are shown as `Authenticity: NOT VERIFIED`. |
 | Network exfiltration | `networkAccess` defaults to false; network-capable collectors are blocked unless the plan (and, later, the user) allows a declared destination/protocol/purpose. |
-| Script injection (viewer) | The future viewer treats all content as hostile: HTML escaping, strict CSP, no script execution from diagnostic files, no remote images by default, restricted local binding. |
+| Script injection (viewer) | The viewer treats all content as hostile: React text escaping, strict CSP, no HTML rendering from diagnostic files, no remote assets, and inert UTF-8 text previews. |
+| DNS rebinding / hostile web page targeting viewer | IPv4 loopback binding, exact Host and Origin checks, an unguessable session token, SameSite cookie, required mutation header, and no CORS. |
+| Oversized viewer upload | Request and artifact body limits, bounded ZIP parsing, per-entry and aggregate decompression limits, and HTTP timeouts. |
+| Misleading requester signature | DSSE signature validity and local requester trust are separate states. Unknown keys are reported as not verified, not invalid or trusted. |
 | Memory / CPU exhaustion | Size and duration limits on collection; bounded archive reads. |
 | Malicious file names | Names are validated; only the logical path is stored in the manifest. |
 

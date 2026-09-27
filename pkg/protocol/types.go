@@ -126,8 +126,10 @@ type LocalConfig struct {
 // It is the first link in the disclosure chain and is stored verbatim
 // (canonicalized) inside every diagnostic artifact.
 type DiagnosticRequest struct {
-	ProtocolVersion string                `json:"protocolVersion" yaml:"protocolVersion"`
-	Request         struct{ ID string }   `json:"request" yaml:"request"`
+	ProtocolVersion string `json:"protocolVersion" yaml:"protocolVersion"`
+	Request         struct {
+		ID string `json:"id" yaml:"id"`
+	} `json:"request" yaml:"request"`
 	Requester       Requester             `json:"requester" yaml:"requester"`
 	Purpose         Purpose               `json:"purpose" yaml:"purpose"`
 	ExpiresAt       string                `json:"expiresAt,omitempty" yaml:"expiresAt,omitempty"`
@@ -361,6 +363,7 @@ const (
 	FileWarnings          = "reports/warnings.json"
 	FileFindings          = "reports/findings.json"
 	FileDisclosureReceipt = "attestations/disclosure-receipt.json"
+	FileRequestEnvelope   = "attestations/request.dsse.json"
 	DirData               = "data"
 	DirReports            = "reports"
 	DirAttestations       = "attestations"

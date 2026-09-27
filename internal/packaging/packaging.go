@@ -31,6 +31,9 @@ type Input struct {
 	Warnings     []string
 	Findings     []protocol.Finding
 	CollectorVer map[string]string // collector id -> version
+	// RequestEnvelope is the original DSSE envelope when an authenticated
+	// request initiated this collection. It is preserved byte-for-byte.
+	RequestEnvelope []byte
 }
 
 type ManifestMeta struct {
@@ -109,6 +112,9 @@ func Build(outPath string, in *Input) (*protocol.DisclosureReceipt, error) {
 		protocol.FileTransformations: transformBytes,
 		protocol.FileWarnings:        warningsBytes,
 		protocol.FileFindings:        findingsBytes,
+	}
+	if len(in.RequestEnvelope) > 0 {
+		docFiles[protocol.FileRequestEnvelope] = in.RequestEnvelope
 	}
 	for name, data := range docFiles {
 		if err := os.MkdirAll(filepath.Dir(filepath.Join(tmp, name)), 0o700); err != nil {

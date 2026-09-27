@@ -7,6 +7,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/Irish-Joseph/diagpermit/internal/requestauth"
 	"github.com/Irish-Joseph/diagpermit/internal/safezip"
 	"github.com/Irish-Joseph/diagpermit/pkg/protocol"
 )
@@ -67,7 +68,23 @@ var inspectCmd = &cobra.Command{
 		}
 		fmt.Fprintln(w)
 		fmt.Fprintf(w, "Purpose:         %s\n", req.Purpose.Description)
-		fmt.Fprintln(w, "Authenticity:    NOT VERIFIED (unsigned request)")
+		authenticity := "UNSIGNED"
+		if zr.Find(protocol.FileRequestEnvelope) != nil {
+			envelope, readErr := zr.ReadEntry(protocol.FileRequestEnvelope)
+			if readErr == nil {
+				var store *requestauth.TrustStore
+				if inspectTrustStore != "" {
+					store, readErr = requestauth.LoadTrustStore(inspectTrustStore)
+				}
+				if readErr == nil {
+					authenticity = requestauth.Verify(envelope, store).Label
+				}
+			}
+			if readErr != nil {
+				return readErr
+			}
+		}
+		fmt.Fprintf(w, "Authenticity:    %s\n", authenticity)
 		if req.RetentionNotice != nil {
 			fmt.Fprintf(w, "Retention:       %s\n", req.RetentionNotice.Text)
 		}
@@ -137,6 +154,8 @@ var inspectCmd = &cobra.Command{
 	},
 }
 
+var inspectTrustStore string
+
 func orNone(s []string) string {
 	if len(s) == 0 {
 		return "(none)"
@@ -144,4 +163,7 @@ func orNone(s []string) string {
 	return strings.Join(s, ", ")
 }
 
-func init() { rootCmd.AddCommand(inspectCmd) }
+func init() {
+	inspectCmd.Flags().StringVar(&inspectTrustStore, "trust-store", "", "local requester trust-store JSON path")
+	rootCmd.AddCommand(inspectCmd)
+}

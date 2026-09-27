@@ -15,7 +15,7 @@
   <img alt="Go 1.27.1" src="https://img.shields.io/badge/Go-1.27.1-00ADD8.svg?logo=go&logoColor=white">
 </p>
 
-DiagPermit is an open protocol and reference CLI for **consent-driven diagnostic exchange**. A support team declares exactly what it needs, the user reviews and approves those capabilities, collection and privacy transformations happen locally, and the resulting artifact records what was requested, approved, collected, and transformed.
+DiagPermit is an open protocol, CLI, and local visual viewer for **consent-driven diagnostic exchange**. A support team declares exactly what it needs, the user reviews and approves those capabilities, collection and privacy transformations happen locally, and the resulting artifact records what was requested, approved, collected, and transformed.
 
 > [!IMPORTANT]
 > DiagPermit is an early-stage project. The protocol and CLI may evolve before the first stable release. See [TRADEMARKS.md](TRADEMARKS.md).
@@ -100,6 +100,33 @@ go build -o diagpermit ./cmd/diagpermit
 
 On Windows PowerShell, run the binary as `.\diagpermit.exe`.
 
+### Open the local viewer
+
+```bash
+./diagpermit ui
+./diagpermit ui diagpermit.yaml
+./diagpermit ui support-CASE-LOCAL.diagnostic
+```
+
+The viewer listens only on a random `127.0.0.1` port, uses a random local
+session token, loads no remote assets, and uploads nothing. It supports the
+complete request → consent → collect → transform → receipt → verify workflow.
+
+<p align="center">
+  <img src="docs/assets/diagpermit-v02-consent.png" alt="DiagPermit local viewer showing explicit capability consent and hard controls" width="100%">
+</p>
+
+<p align="center">
+  <img src="docs/assets/diagpermit-v02-plan.png" alt="DiagPermit immutable disclosure plan before local collection" width="100%">
+</p>
+
+<p align="center">
+  <img src="docs/assets/diagpermit-v02-artifact.png" alt="DiagPermit local viewer showing an integrity-verified diagnostic package" width="100%">
+</p>
+
+These are screenshots of the running V0.2 viewer using the repository's
+synthetic DiagShop example—not design mockups and not customer data.
+
 ### Create and review a request
 
 ```bash
@@ -137,6 +164,10 @@ See the [full quick start](docs/quickstart.md) and [broken demo application](exa
 | `diagpermit collect` | Runs consent → collection → transformation → packaging |
 | `diagpermit inspect <artifact>` | Displays a terminal-friendly artifact summary |
 | `diagpermit verify <artifact>` | Verifies archive structure, hashes, schemas, and receipt links |
+| `diagpermit ui [request-or-artifact]` | Runs the loopback-only visual consent and artifact viewer |
+| `diagpermit request keygen` | Creates an Ed25519 key and local trust-store template |
+| `diagpermit request sign` | Signs a request in a standard DSSE envelope |
+| `diagpermit request verify` | Separately reports signature validity and local identity trust |
 | `diagpermit redact-test [file]` | Previews privacy transformations on local input |
 | `diagpermit collectors` | Lists built-in collectors and declared capabilities |
 | `diagpermit doctor` | Checks the local CLI environment |
@@ -146,6 +177,8 @@ See the [full quick start](docs/quickstart.md) and [broken demo application](exa
 DiagPermit is local-first by design:
 
 - no account, mandatory server, hidden telemetry, or automatic upload;
+- the optional viewer binds only to `127.0.0.1`, uses a random port and session token, enforces Host/Origin checks, and enables no CORS;
+- the viewer has a strict Content Security Policy, request-size limits, server timeouts, and inert text-only artifact previews;
 - network access is disabled unless the request and effective plan allow it;
 - arbitrary shell execution is rejected in protocol 0.1;
 - file reads are bounded to an allowed root and reject symlinks by default;
@@ -161,10 +194,11 @@ Read the [security model](docs/security.md), [threat model](docs/threat-model.md
 ## Architecture
 
 ```text
-cmd/diagpermit/     CLI commands
+cmd/diagpermit/     CLI commands, including the local viewer launcher
 collectors/         Typed system, runtime, application, and Docker collectors
-internal/           Consent, collection, transformation, packaging, and verification
+internal/           Consent, collection, transformation, packaging, trust, viewer, and verification
 pkg/protocol/       Public protocol types and canonical JSON hashing
+web/                React + TypeScript local viewer source
 conformance/        Portable protocol test vectors
 testdata/           Synthetic secret corpus—never real user data
 examples/           Demonstration applications
@@ -180,6 +214,7 @@ go test -count=1 ./...
 go test -count=1 -v ./conformance/
 go vet ./...
 gofmt -l .
+cd web && npm ci && npm test && npm run build
 ```
 
 CI runs build, formatting, vet, tests, conformance, security-oriented linting, and CodeQL across Linux, Windows, and macOS where applicable.

@@ -13,6 +13,7 @@ import (
 
 	"github.com/Irish-Joseph/diagpermit/internal/collection"
 	"github.com/Irish-Joseph/diagpermit/internal/consent"
+	"github.com/Irish-Joseph/diagpermit/internal/requestauth"
 	"github.com/Irish-Joseph/diagpermit/internal/safezip"
 	"github.com/Irish-Joseph/diagpermit/internal/transform"
 	"github.com/Irish-Joseph/diagpermit/internal/verification"
@@ -162,8 +163,16 @@ func TestEndToEndArtifact(t *testing.T) {
 	}
 
 	outPath := filepath.Join(dir, "out.diagnostic")
-	out, err := Run(context.Background(), req2, consent.ModeFile, nil,
-		consentFile(t, []string{"system.os", "application.logs"}, nil), outPath, discardWriter{})
+	_, privateKey, err := requestauth.GenerateKey()
+	if err != nil {
+		t.Fatal(err)
+	}
+	envelope, err := requestauth.Sign(req2, "test-key", privateKey)
+	if err != nil {
+		t.Fatal(err)
+	}
+	out, err := RunAuthenticated(context.Background(), req2, consent.ModeFile, nil,
+		consentFile(t, []string{"system.os", "application.logs"}, nil), outPath, discardWriter{}, envelope)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -191,6 +200,9 @@ func TestEndToEndArtifact(t *testing.T) {
 		t.Fatal(err)
 	}
 	logBytes, err := zr.ReadEntry("data/application/logs.txt")
+	if zr.Find(protocol.FileRequestEnvelope) == nil {
+		t.Fatal("signed request envelope missing from artifact")
+	}
 	zr.Close()
 	if err != nil {
 		t.Fatal(err)

@@ -25,20 +25,26 @@ func Load(path string) (*protocol.DiagnosticRequest, error) {
 	if err != nil {
 		return nil, fmt.Errorf("reading %s: %w", path, err)
 	}
+	return LoadBytes(b, path)
+}
+
+// LoadBytes decodes and validates a request document supplied by a trusted
+// local caller. source is used only to make validation errors useful.
+func LoadBytes(b []byte, source string) (*protocol.DiagnosticRequest, error) {
 	var req protocol.DiagnosticRequest
 	// YAML is a superset of JSON, so JSON files work too. KnownFields
 	// prevents misspelled security or limit settings from being ignored.
 	decoder := yaml.NewDecoder(bytes.NewReader(b))
 	decoder.KnownFields(true)
 	if err := decoder.Decode(&req); err != nil {
-		return nil, fmt.Errorf("parsing %s: %w", path, err)
+		return nil, fmt.Errorf("parsing %s: %w", source, err)
 	}
 	var extra any
 	if err := decoder.Decode(&extra); err != io.EOF {
 		if err == nil {
-			return nil, fmt.Errorf("parsing %s: multiple YAML documents are not allowed", path)
+			return nil, fmt.Errorf("parsing %s: multiple YAML documents are not allowed", source)
 		}
-		return nil, fmt.Errorf("parsing %s: %w", path, err)
+		return nil, fmt.Errorf("parsing %s: %w", source, err)
 	}
 	if err := req.Validate(); err != nil {
 		return nil, err

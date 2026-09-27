@@ -16,6 +16,7 @@ import (
 	"github.com/Irish-Joseph/diagpermit/internal/collection"
 	"github.com/Irish-Joseph/diagpermit/internal/consent"
 	"github.com/Irish-Joseph/diagpermit/internal/packaging"
+	"github.com/Irish-Joseph/diagpermit/internal/requestauth"
 	"github.com/Irish-Joseph/diagpermit/internal/transform"
 	"github.com/Irish-Joseph/diagpermit/pkg/protocol"
 )
@@ -39,6 +40,27 @@ type Output struct {
 
 // Run executes the full workflow and writes the artifact.
 func Run(ctx context.Context, req *protocol.DiagnosticRequest, mode string, prompter *consent.Prompter, consentData []byte, outPath string, log io.Writer) (*Output, error) {
+	return run(ctx, req, mode, prompter, consentData, outPath, log, nil)
+}
+
+// RunAuthenticated executes the workflow and preserves the original DSSE
+// request envelope inside the artifact.
+func RunAuthenticated(ctx context.Context, req *protocol.DiagnosticRequest, mode string, prompter *consent.Prompter, consentData []byte, outPath string, log io.Writer, requestEnvelope []byte) (*Output, error) {
+	return run(ctx, req, mode, prompter, consentData, outPath, log, requestEnvelope)
+}
+
+func run(ctx context.Context, req *protocol.DiagnosticRequest, mode string, prompter *consent.Prompter, consentData []byte, outPath string, log io.Writer, requestEnvelope []byte) (*Output, error) {
+	if len(requestEnvelope) > 0 {
+		result := requestauth.Verify(requestEnvelope, nil)
+		if result.Request == nil || result.Status == requestauth.StatusInvalid {
+			return nil, fmt.Errorf("authenticated request envelope is invalid")
+		}
+		envelopeHash, envelopeErr := protocol.HashDocument(result.Payload)
+		requestHash, requestErr := protocol.HashDocument(req)
+		if envelopeErr != nil || requestErr != nil || envelopeHash != requestHash {
+			return nil, fmt.Errorf("authenticated request envelope does not match the request")
+		}
+	}
 	// Fail closed if the ruleset cannot even be built.
 	ruleset, err := buildRuleset(req)
 	if err != nil {
@@ -112,15 +134,16 @@ func Run(ctx context.Context, req *protocol.DiagnosticRequest, mode string, prom
 		outPath = packaging.DefaultOutputName(req, outDir)
 	}
 	receipt, err := packaging.Build(outPath, &packaging.Input{
-		Request:      req,
-		Decision:     decision,
-		Plan:         plan,
-		Collection:   rep,
-		Transform:    transformReport,
-		Files:        transformed,
-		ManifestMeta: meta,
-		Warnings:     warnings,
-		Findings:     findings,
+		Request:         req,
+		Decision:        decision,
+		Plan:            plan,
+		Collection:      rep,
+		Transform:       transformReport,
+		Files:           transformed,
+		ManifestMeta:    meta,
+		Warnings:        warnings,
+		Findings:        findings,
+		RequestEnvelope: requestEnvelope,
 	})
 	if err != nil {
 		return nil, err

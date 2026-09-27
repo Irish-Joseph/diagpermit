@@ -24,7 +24,7 @@ Sharing the artifact is always a separate, deliberate action.`,
 		if err != nil {
 			return err
 		}
-		out, err := pipeline.Run(cmd.Context(), req, mode, prompter, consentData, flagOutput, cmd.OutOrStdout())
+		out, err := pipeline.RunAuthenticated(cmd.Context(), req, mode, prompter, consentData, flagOutput, cmd.OutOrStdout(), loadedRequestEnvelope)
 		if err != nil {
 			// Fail-closed transformation failures get the mandated message.
 			_ = pipeline.PrintFailClosed(cmd.OutOrStdout(), err)

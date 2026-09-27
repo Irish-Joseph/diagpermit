@@ -66,6 +66,15 @@ Validate:
 diagpermit validate diagpermit.yaml
 ```
 
+To use the visual workflow, open the request in the local viewer:
+
+```bash
+diagpermit ui diagpermit.yaml
+```
+
+The viewer opens on a random `127.0.0.1` port. It contains all frontend assets
+inside the binary and does not upload diagnostic data.
+
 ## 3. Plan
 
 ```bash
@@ -106,6 +115,26 @@ diagpermit verify support-CASE-82341.diagnostic
 disclosure-plan hash and the manifest hash, and checks archive structure and
 schemas. It prints `INTEGRITY VERIFIED` or lists failures — and always
 reminds you that integrity is **not** a privacy guarantee.
+
+You can inspect the same package visually:
+
+```bash
+diagpermit ui support-CASE-82341.diagnostic
+```
+
+## Authenticated requester (optional)
+
+Requesters can sign a request using a DSSE envelope. Users configure trust
+locally and can distinguish a valid signature from a trusted requester:
+
+```bash
+diagpermit request verify request.dsse.json --trust-store requester-trust.json
+diagpermit plan --request request.dsse.json --trust-store requester-trust.json
+diagpermit collect --request request.dsse.json --trust-store requester-trust.json
+```
+
+See [authenticated requests](request-authentication.md) for key generation and
+trust-policy details.
 
 ## 6. Try the demo
 

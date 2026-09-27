@@ -10,26 +10,54 @@ import (
 
 	"github.com/Irish-Joseph/diagpermit/internal/config"
 	"github.com/Irish-Joseph/diagpermit/internal/consent"
+	"github.com/Irish-Joseph/diagpermit/internal/requestauth"
 	"github.com/Irish-Joseph/diagpermit/pkg/protocol"
 )
 
 var (
-	flagRequest string
-	flagYes     bool
-	flagConsent string
-	flagOutput  string
+	flagRequest           string
+	flagYes               bool
+	flagConsent           string
+	flagOutput            string
+	flagRequestTrustStore string
+	loadedRequestAuth     *requestauth.Result
+	loadedRequestEnvelope []byte
 )
 
 func addCommonFlags(cmd *cobra.Command) {
 	cmd.Flags().StringVarP(&flagRequest, "request", "r", config.DefaultFile, "path to the diagnostic request file (diagpermit.yaml)")
+	cmd.Flags().StringVar(&flagRequestTrustStore, "trust-store", "", "local requester trust-store JSON path")
 }
 
 func loadRequest(cmd *cobra.Command) (*protocol.DiagnosticRequest, error) {
+	loadedRequestAuth = nil
+	loadedRequestEnvelope = nil
 	req, err := config.Load(flagRequest)
-	if err != nil {
+	if err == nil {
+		result := requestauth.Result{Status: requestauth.StatusUnsigned, Label: "UNSIGNED", Detail: "Request has no cryptographic signature.", Request: req}
+		loadedRequestAuth = &result
+		return req, nil
+	}
+	// A DSSE envelope is JSON, not a direct request document.
+	// #nosec G304 -- flagRequest is explicitly selected by the local CLI user.
+	b, readErr := os.ReadFile(flagRequest)
+	if readErr != nil {
 		return nil, err
 	}
-	return req, nil
+	var store *requestauth.TrustStore
+	if flagRequestTrustStore != "" {
+		store, readErr = requestauth.LoadTrustStore(flagRequestTrustStore)
+		if readErr != nil {
+			return nil, readErr
+		}
+	}
+	result := requestauth.Verify(b, store)
+	if result.Request == nil || result.Status == requestauth.StatusInvalid || result.Status == requestauth.StatusUnsigned {
+		return nil, err
+	}
+	loadedRequestAuth = &result
+	loadedRequestEnvelope = b
+	return result.Request, nil
 }
 
 // consentMode resolves how consent will be obtained.
@@ -89,7 +117,11 @@ func printPlan(w io.Writer, req *protocol.DiagnosticRequest) {
 	if req.Requester.Organization != "" {
 		fmt.Fprintf(w, " (%s)", req.Requester.Organization)
 	}
-	fmt.Fprintf(w, "\nAuthenticity: NOT VERIFIED (unsigned request)\n")
+	authLabel := "UNSIGNED"
+	if loadedRequestAuth != nil {
+		authLabel = loadedRequestAuth.Label
+	}
+	fmt.Fprintf(w, "\nAuthenticity: %s\n", authLabel)
 	fmt.Fprintf(w, "Purpose:     %s\n\n", req.Purpose.Description)
 
 	rev := consent.ReviewFor(req)

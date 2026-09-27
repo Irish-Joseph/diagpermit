@@ -3,6 +3,8 @@
 /diagpermit.exe
 *.exe
 dist/
+!/internal/viewer/dist/
+!/internal/viewer/dist/**
 
 # Generated diagnostic artifacts (never commit local diagnostics)
 *.diagnostic
@@ -12,6 +14,8 @@ examples/broken-demo-app/logs/
 
 # Go
 vendor/
+/web/node_modules/
+/web/*.tsbuildinfo
 
 # Windows shell artifact
 nul

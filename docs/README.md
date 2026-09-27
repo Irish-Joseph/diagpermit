@@ -4,6 +4,9 @@ Use this page as the documentation map for DiagPermit.
 
 ## Start here
 
+- [Local visual viewer](viewer.md) — run the V0.2 browser workflow safely.
+- [Authenticated requests](request-authentication.md) — sign DSSE requests and configure local trust.
+
 - [Quick start](quickstart.md) — build the CLI and run the complete workflow.
 - [Protocol overview](protocol-overview.md) — understand the documents, hashes, and artifact chain.
 - [Broken demo application](../examples/broken-demo-app/README.md) — exercise collection against a reproducible failure.

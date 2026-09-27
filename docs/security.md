@@ -40,6 +40,20 @@ Scorecard improvement and the OpenSSF Best Practices Badge from the start.
 - Telemetry: **off**; V0.1 has none.
 - Privacy transformations: **fail closed**.
 
+## Local viewer boundary
+
+`diagpermit ui` binds only to IPv4 loopback on a random operating-system
+assigned port. A random 256-bit token establishes an HttpOnly, SameSite=Strict
+session. All state-changing requests require an exact same-origin `Origin`
+header and a custom mutation header. The server rejects unexpected Host values,
+does not enable CORS, limits request bodies and headers, and sets read/write/idle
+timeouts.
+
+The embedded viewer uses no CDN, analytics, remote font, or external image. A
+strict Content Security Policy permits scripts, styles, images, and API calls
+only from the local viewer origin. Artifact previews are manifest-bound,
+size-limited UTF-8 text returned inside JSON and rendered as text—not HTML.
+
 ## Privacy wording policy
 
 Documentation MUST NOT say "DiagPermit guarantees that all secrets are removed."
