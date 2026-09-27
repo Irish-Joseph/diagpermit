@@ -145,6 +145,30 @@ The viewer listens only on a random `127.0.0.1` port, uses a random local
 session token, loads no remote assets, and uploads nothing. It supports the
 complete request → consent → collect → transform → receipt → verify workflow.
 
+### Use it with another application
+
+DiagPermit does not remotely attach to an application or log platform. Point
+`local.applicationLogPath` at an existing text log inside the directory where
+you run DiagPermit, or deliberately export a small set of Docker, Kubernetes,
+systemd, or Windows events into that directory first:
+
+```yaml
+capabilities:
+  application.logs:
+    requirement: optional
+    constraints:
+      maxLines: 500
+      maxBytes: 1048576
+
+local:
+  applicationLogPath: ./logs/application.log
+```
+
+The approved, bounded log tail is collected locally and transformed before
+packaging. Nothing is uploaded automatically. See
+[collecting application logs](docs/application-logs.md) for copyable platform
+examples and the required review steps.
+
 ### Create and review a request
 
 ```bash
