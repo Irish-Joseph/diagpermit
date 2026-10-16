@@ -1,0 +1,16 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: parse-test
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo parse-test-ok
