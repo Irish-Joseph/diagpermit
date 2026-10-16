@@ -1,124 +1,44 @@
 name: Release
-
-on:
+true:
   push:
     tags:
-      - "v*"
-
+    - v*
 permissions:
   contents: write
-
 jobs:
   release:
     name: Build and publish release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-go@v7
-        with:
-          go-version-file: go.mod
-      - uses: actions/setup-node@v7
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: web/package-lock.json
-      - name: Build embedded viewer
-        working-directory: web
-        run: npm ci && npm test && npm run build
-      - name: Build
-        env:
-          CGO_ENABLED: "0"
-        run: |
-          mkdir -p dist
-          for target in linux/amd64 linux/arm64 windows/amd64 darwin/amd64 darwin/arm64; do
-            goos=${target%/*}
-            goarch=${target#*/}
-            ext=""
-            [ "$goos" = "windows" ] && ext=".exe"
-            GOOS="$goos" GOARCH="$goarch" go build -trimpath \
-              -ldflags "-s -w -X main.CLIVersion=${GITHUB_REF_NAME#v}" \
-              -o "dist/diagpermit-${goos}-${goarch}${ext}" ./cmd/diagpermit
-          done
-      - name: Checksums
-        working-directory: dist
-        run: sha256sum diagpermit-* > SHA256SUMS
-      - name: SBOM (CycloneDX)
-        run: |
-          go install github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod@v1.12.0
-          cyclonedx-gomod mod -json -output dist/bom.json
-      - name: Publish
-        uses: softprops/action-gh-release@v3
-        with:
-          name: DiagPermit ${{ GITHUB_REF_NAME }} (Release Candidate)
-          draft: false
-          prerelease: true
-          body: |
-            ## DiagPermit ${{ GITHUB_REF_NAME }} - Release Candidate
+    - uses: actions/checkout@v7
+    - uses: actions/setup-go@v7
+      with:
+        go-version-file: go.mod
+    - uses: actions/setup-node@v7
+      with:
+        node-version: 22
+        cache: npm
+        cache-dependency-path: web/package-lock.json
+    - name: Build embedded viewer
+      working-directory: web
+      run: npm ci && npm test && npm run build
+    - name: Build
+      env:
+        CGO_ENABLED: '0'
+      run: "mkdir -p dist\nfor target in linux/amd64 linux/arm64 windows/amd64 darwin/amd64\
+        \ darwin/arm64; do\n  goos=${target%/*}\n  goarch=${target#*/}\n  ext=\"\"\
+        \n  [ \"$goos\" = \"windows\" ] && ext=\".exe\"\n  GOOS=\"$goos\" GOARCH=\"\
+        $goarch\" go build -trimpath \\\n    -ldflags \"-s -w -X main.CLIVersion=${GITHUB_REF_NAME#v}\"\
+        \ \\\n    -o \"dist/diagpermit-${goos}-${goarch}${ext}\" ./cmd/diagpermit\n\
+        done\n"
+    - name: Checksums
+      working-directory: dist
+      run: sha256sum diagpermit-* > SHA256SUMS
+    - name: SBOM (CycloneDX)
+      run: 'go install github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod@v1.12.0
 
-            > This is a release candidate intended for public testing before
-            > v0.2.0 stable. It is not a production-stable release.
+        cyclonedx-gomod mod -json -output dist/bom.json
 
-            DiagPermit is an open protocol and local-first developer tool for
-            consent-driven diagnostic exchange. A requester declares the
-            diagnostic capabilities it needs, users approve or deny them,
-            collection and configured privacy transformations happen locally,
-            and the resulting diagnostic package contains a disclosure receipt
-            and integrity-verifiable manifest.
-
-            ### Highlights
-
-            - Local-first diagnostic workflow - no account, no server, no upload
-            - Explicit capability consent (required / optional / forbidden)
-            - Embedded local UI (`diagpermit ui`), loopback-only, no Node.js needed
-            - Typed collectors (system, runtime, application logs, Docker)
-            - Privacy transformations with fail-closed behaviour
-            - Disclosure receipts in every artifact
-            - Signed-request authenticity (DSSE + Ed25519, local trust policy)
-            - Integrity verification (`INTEGRITY VERIFIED`)
-            - No automatic diagnostic upload, ever
-
-            ### Getting started
-
-            Download the binary for your platform, then:
-
-            ```bash
-            diagpermit init
-            diagpermit validate
-            diagpermit plan
-            diagpermit collect --yes
-            diagpermit inspect support-*.diagnostic
-            diagpermit verify support-*.diagnostic
-            diagpermit ui
-            ```
-
-            Verify the downloaded file against `SHA256SUMS` first.
-
-            ### Compatibility
-
-            - Protocol version: 0.1 (unchanged)
-            - V0.1 `.diagnostic` artifacts remain readable and verifiable
-            - All V0.1 CLI commands remain available; the CLI works headless
-
-            ### Known limitations
-
-            - Release binaries are not cryptographically signed; use
-              `SHA256SUMS` and the CycloneDX SBOM.
-            - Docker diagnostics require a running Docker daemon.
-            - Pattern-based redaction never guarantees complete secret removal;
-              review content before sharing.
-
-            ### Feedback requested
-
-            Please report:
-
-            - installation issues
-            - Windows / Linux / macOS differences
-            - Docker behavior
-            - consent UX
-            - request-signing issues
-            - UI issues
-            - malformed diagnostic handling
-            - security edge cases
-            - documentation problems
-          files: |
-            dist/*
+        '
+    - name: parse-test
+      run: echo bisect-a-ok
