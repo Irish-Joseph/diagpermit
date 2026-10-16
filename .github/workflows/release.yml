@@ -58,7 +58,7 @@ jobs:
         run: |
           TAG="${GITHUB_REF_NAME}"
           if [ -f "release-notes/$TAG.md" ]; then
-            gh release edit "$TAG" --name "DiagPermit $TAG (Release Candidate)" --notes-file "release-notes/$TAG.md"
+            gh release edit "$TAG" --title "DiagPermit $TAG (Release Candidate)" --notes-file "release-notes/$TAG.md"
           else
             echo "No release-notes/$TAG.md found; leaving default release notes."
           fi
