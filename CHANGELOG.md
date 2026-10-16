@@ -3,7 +3,62 @@
 All notable changes to this project are documented here. The project follows
 Semantic Versioning.
 
-## [Unreleased] — V0.2 development
+## [0.2.0-rc.1] — Release candidate (public testing)
+
+> This is a release candidate intended for public testing before v0.2.0
+> stable. It is not a production-stable release.
+
+### Highlights
+
+- Consent-driven diagnostic workflow: request → capability review →
+  explicit consent → immutable disclosure plan → local collection.
+- Embedded local UI (`diagpermit ui`): full request/consent/collection/
+  artifact workflow on a loopback-only server with a session token, strict
+  CSP, and no CORS. All assets compile into the binary; no Node.js needed.
+- Privacy transformation pipeline: 15 built-in detectors plus user patterns,
+  six transformation actions, per-artifact stable pseudonyms, fail-closed
+  behaviour, and reports that never contain original values.
+- Disclosure receipt in every artifact: request hash, plan hash, consent
+  summary, collection enforcement flags, transformation summary, manifest
+  hash.
+- Integrity verification (`INTEGRITY VERIFIED`): archive, schemas, manifest
+  coverage, hashes, request/plan/manifest binding. Integrity is never
+  presented as a privacy guarantee.
+- Signed diagnostic requests: DSSE envelopes, Ed25519 signatures, explicit
+  local trust policy with five distinct authenticity states.
+- Cross-platform: Linux (amd64/arm64), Windows (amd64), macOS (amd64/arm64).
+- Published protocol JSON schemas, examples, RFCs, and a 10-vector
+  conformance suite.
+
+### Known limitations
+
+- No browser-level (Playwright) CI E2E yet; the UI workflow is covered by
+  Go API-level security tests and release smoke checks.
+- Release binaries are not cryptographically signed; `SHA256SUMS` plus the
+  source tag and SBOM are the current integrity controls.
+- Docker diagnostics require a running Docker daemon; without one, the
+  Docker capability is reported as failed (never skipped silently).
+- Remaining V0.2 roadmap items are intentionally deferred: existing-tool
+  adapter, policy profiles, advanced Docker diagnostics, encrypted
+  artifacts. See ROADMAP.md.
+- Pattern-based redaction cannot guarantee that every sensitive value is
+  detected; review content before sharing (by design, and stated in all
+  user-visible output).
+
+### Compatibility
+
+- Protocol remains 0.1. The protocol version is independent of the CLI
+  version and did not change with the UI.
+- V0.1 `.diagnostic` artifacts remain fully readable and verifiable.
+- All V0.1 CLI commands remain available; the CLI works headless,
+  independently of the UI.
+
+### Release artifacts
+
+Pushing the `v0.2.0-rc.1` tag triggers the release workflow, which builds
+five platform binaries, `SHA256SUMS`, and a CycloneDX SBOM.
+
+## V0.2 development history
 
 ### Added
 
@@ -42,22 +97,6 @@ Semantic Versioning.
 
 - Canonical request JSON now emits the documented lowercase `request.id` key
   while remaining able to read existing V0.1 artifacts.
-
-### Release candidate notes (v0.2.0-rc.1)
-
-- Release artifacts (five platform binaries, `SHA256SUMS`, CycloneDX SBOM)
-  are produced by the `release.yml` workflow when a `v*` tag is pushed.
-- Binaries are not cryptographically signed in this candidate; checksums and
-  the source tag are the integrity controls until signing infrastructure
-  lands. Do not treat the release as signed.
-- Known limitations: no browser-level (Playwright) E2E job yet — the local
-  viewer workflow is covered by Go API-level tests and manual smoke checks;
-  Docker diagnostics require a running Docker daemon; pattern-based redaction
-  never guarantees complete secret removal (by design, and stated as such in
-  all user-visible output).
-- Upgrade/compatibility: all V0.1 `.diagnostic` artifacts and V0.1 CLI
-  commands remain supported. The protocol version is still 0.1; the CLI
-  version moves to 0.2.0-rc.1 via the release tag.
 
 ## V0.1 development
 
