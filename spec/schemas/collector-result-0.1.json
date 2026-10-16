@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "collector-result-0.1.json",
+  "title": "CollectorResult",
+  "description": "What actually happened for one capability (protocol 0.1).",
+  "type": "object",
+  "required": [
+    "capability",
+    "collector",
+    "collectorVersion",
+    "status",
+    "startedAt",
+    "completedAt",
+    "bytes"
+  ],
+  "properties": {
+    "capability": {
+      "type": "string",
+      "minLength": 1
+    },
+    "collector": {
+      "type": "string",
+      "minLength": 1
+    },
+    "collectorVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "success",
+        "partial",
+        "failed",
+        "skipped",
+        "denied_by_user",
+        "forbidden",
+        "unsupported",
+        "timed_out",
+        "size_limit_exceeded"
+      ]
+    },
+    "startedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "bytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "message": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

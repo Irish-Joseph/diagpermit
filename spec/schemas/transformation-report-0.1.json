@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "transformation-report-0.1.json",
+  "title": "TransformationReport",
+  "description": "Summary of the privacy transformation phase. It records counts and detector identities only; it must never contain original sensitive values (protocol 0.1).",
+  "type": "object",
+  "required": [
+    "protocolVersion",
+    "requestId",
+    "ruleset",
+    "detectorsExecuted",
+    "transformationsApplied",
+    "detectors",
+    "files"
+  ],
+  "properties": {
+    "protocolVersion": {
+      "const": "0.1"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ruleset": {
+      "type": "string",
+      "minLength": 1
+    },
+    "detectorsExecuted": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "transformationsApplied": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "detectors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "detector",
+          "category",
+          "executed",
+          "matches",
+          "transformer"
+        ],
+        "properties": {
+          "detector": {
+            "type": "string",
+            "minLength": 1
+          },
+          "category": {
+            "type": "string"
+          },
+          "executed": {
+            "type": "boolean"
+          },
+          "matches": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "transformer": {
+            "enum": [
+              "drop",
+              "mask",
+              "replace",
+              "truncate",
+              "hash",
+              "pseudonymize"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}

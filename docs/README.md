@@ -21,9 +21,13 @@ Use this page as the documentation map for DiagPermit.
 ## Protocol validation
 
 - [Conformance vectors](../conformance/) — portable behavior and integrity fixtures.
+- [JSON schemas](../spec/schemas/) — machine-readable protocol 0.1 schemas for all protocol documents.
+- [Protocol examples](../spec/examples/) — copyable request and consent examples.
+- [RFCs](../spec/rfcs/) — the protocol change process and accepted RFCs.
 
 ## Project
 
+- [Roadmap](../ROADMAP.md)
 - [Contributing](../CONTRIBUTING.md)
 - [Governance](../GOVERNANCE.md)
 - [Support](../SUPPORT.md)

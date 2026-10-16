@@ -1,0 +1,4 @@
+{
+  "approved": ["system.os", "runtime.python.version", "docker.container_state"],
+  "denied": ["application.logs"]
+}

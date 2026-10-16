@@ -1,0 +1,44 @@
+# Minimal DiagPermit 0.1 request.
+# Validate with: diagpermit validate spec/examples/request-basic.yaml
+protocolVersion: "0.1"
+
+request:
+  id: CASE-0001
+
+requester:
+  organization: ExampleDB
+  name: ExampleDB Support
+
+purpose:
+  code: database-connectivity
+  description: Diagnose failed database connections
+
+capabilities:
+  system.os:
+    requirement: required_for_case
+  runtime.python.version:
+    requirement: required_for_case
+  docker.container_state:
+    requirement: optional
+  application.logs:
+    requirement: optional
+    constraints:
+      maxLines: 500
+      maxBytes: 1048576
+  environment.values:
+    requirement: forbidden
+  filesystem.source_code:
+    requirement: forbidden
+
+policy:
+  networkAccess: false
+  arbitraryShellExecution: false
+  maximumTotalBytes: 26214400
+  maximumDurationSeconds: 60
+
+retentionNotice:
+  text: Diagnostic information is expected to be retained for up to 30 days.
+
+local:
+  applicationLogPath: ./logs/app.log
+  outputDir: .

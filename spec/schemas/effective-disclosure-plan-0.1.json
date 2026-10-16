@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "effective-disclosure-plan-0.1.json",
+  "title": "EffectiveDisclosurePlan",
+  "description": "The immutable logical plan computed from the request and consent BEFORE any collection occurs. A hash of this document is embedded in the disclosure receipt.",
+  "type": "object",
+  "required": [
+    "protocolVersion",
+    "requestId",
+    "approved",
+    "denied",
+    "forbidden",
+    "networkAccess",
+    "shellExecution"
+  ],
+  "properties": {
+    "protocolVersion": {
+      "const": "0.1"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "approved": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "denied": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "forbidden": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "notRequested": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "networkAccess": {
+      "type": "boolean"
+    },
+    "shellExecution": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": false
+}

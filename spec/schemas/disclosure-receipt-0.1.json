@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "disclosure-receipt-0.1.json",
+  "title": "DisclosureReceipt",
+  "description": "The disclosure receipt embedded in every diagnostic artifact. It answers: what was requested, what the user approved, what actually ran, and what was ultimately packaged (protocol 0.1).",
+  "type": "object",
+  "required": [
+    "protocolVersion",
+    "request",
+    "disclosurePlanHash",
+    "consent",
+    "collection",
+    "transformations",
+    "artifact"
+  ],
+  "properties": {
+    "protocolVersion": {
+      "const": "0.1"
+    },
+    "request": {
+      "type": "object",
+      "required": [
+        "id",
+        "hash"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "hash": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "disclosurePlanHash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "consent": {
+      "type": "object",
+      "required": [
+        "approved",
+        "denied"
+      ],
+      "properties": {
+        "approved": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "denied": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "forbidden": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "collection": {
+      "type": "object",
+      "required": [
+        "networkAccess",
+        "arbitraryShellExecution",
+        "startedAt",
+        "completedAt"
+      ],
+      "properties": {
+        "networkAccess": {
+          "type": "boolean"
+        },
+        "arbitraryShellExecution": {
+          "type": "boolean"
+        },
+        "startedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "completedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false
+    },
+    "transformations": {
+      "type": "object",
+      "required": [
+        "ruleset",
+        "detectorsExecuted",
+        "transformationsApplied"
+      ],
+      "properties": {
+        "ruleset": {
+          "type": "string",
+          "minLength": 1
+        },
+        "detectorsExecuted": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "transformationsApplied": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "artifact": {
+      "type": "object",
+      "required": [
+        "manifestHash"
+      ],
+      "properties": {
+        "manifestHash": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

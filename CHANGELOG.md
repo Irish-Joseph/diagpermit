@@ -16,6 +16,12 @@ Semantic Versioning.
 - Frontend and local-server security tests.
 - Fuzz smoke runs of the privacy transformation engine in CI
   (`FuzzTransformContent`, `FuzzTransformCustomPatterns`).
+- Published JSON schemas for all nine protocol 0.1 documents
+  (`spec/schemas/`) with Go schema tests that validate conformance
+  fixtures and real pipeline artifacts, and reject malformed documents.
+- Protocol examples (`spec/examples/`) and the RFC process with the two
+  accepted RFCs (`spec/rfcs/`).
+- Public `ROADMAP.md` and `.github/FUNDING.yml`.
 
 ### Changed
 

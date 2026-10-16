@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "capability-0.1.json",
+  "title": "Capability",
+  "description": "One declared diagnostic capability in a DiagPermit request (protocol 0.1).",
+  "type": "object",
+  "required": [
+    "requirement"
+  ],
+  "properties": {
+    "requirement": {
+      "description": "How the requester classifies the capability. required_for_case grants no bypass of the user.",
+      "enum": [
+        "required_for_case",
+        "optional",
+        "forbidden",
+        "not_requested"
+      ]
+    },
+    "constraints": {
+      "type": "object",
+      "properties": {
+        "maxLines": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxBytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "since": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

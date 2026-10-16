@@ -1,0 +1,175 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "diagnostic-request-0.1.json",
+  "title": "DiagnosticRequest",
+  "description": "The canonical V0.1 diagnostic request document. It is the first link in the disclosure chain and is stored verbatim (canonicalized) inside every diagnostic artifact.",
+  "type": "object",
+  "required": [
+    "protocolVersion",
+    "request",
+    "requester",
+    "purpose",
+    "capabilities",
+    "policy"
+  ],
+  "properties": {
+    "protocolVersion": {
+      "const": "0.1"
+    },
+    "request": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "requester": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "organization": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "purpose": {
+      "type": "object",
+      "required": [
+        "code",
+        "description"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "capabilities": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "$ref": "capability-0.1.json"
+      }
+    },
+    "policy": {
+      "type": "object",
+      "required": [
+        "networkAccess",
+        "arbitraryShellExecution"
+      ],
+      "properties": {
+        "networkAccess": {
+          "type": "boolean"
+        },
+        "arbitraryShellExecution": {
+          "description": "Must be false in protocol 0.1; requests setting it to true are rejected.",
+          "type": "boolean"
+        },
+        "maximumTotalBytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maximumDurationSeconds": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "retentionNotice": {
+      "description": "A declaration only. DiagPermit records it but does not enforce third-party retention behaviour.",
+      "type": "object",
+      "required": [
+        "text"
+      ],
+      "properties": {
+        "text": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "local": {
+      "description": "Reference-implementation-local configuration. Carries no portable semantics.",
+      "type": "object",
+      "properties": {
+        "applicationLogPath": {
+          "type": "string"
+        },
+        "outputDir": {
+          "type": "string"
+        },
+        "privacy": {
+          "type": "object",
+          "properties": {
+            "extraDetectors": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "pattern",
+                  "action"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "pattern": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "action": {
+                    "enum": [
+                      "drop",
+                      "mask",
+                      "replace",
+                      "truncate",
+                      "hash",
+                      "pseudonymize"
+                    ]
+                  },
+                  "replaceWith": {
+                    "type": "string"
+                  },
+                  "truncateTo": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
