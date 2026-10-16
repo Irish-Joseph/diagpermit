@@ -4,11 +4,11 @@ import (
 	"testing"
 )
 
-// FuzzApply is a security-sensitive fuzz target: the
+// FuzzTransformContent is a security-sensitive fuzz target: the
 // transformation engine must never panic, crash or lose data silently on
 // arbitrary input, including binary junk, huge lines and crafted
 // Unicode.
-func FuzzApply(f *testing.F) {
+func FuzzTransformContent(f *testing.F) {
 	seeds := []string{
 		"password=hunter2",
 		"postgres://u:p@h/d",
@@ -44,8 +44,8 @@ func FuzzApply(f *testing.F) {
 	})
 }
 
-// FuzzApplyCustomPatterns fuzzes user-defined patterns too.
-func FuzzApplyCustomPatterns(f *testing.F) {
+// FuzzTransformCustomPatterns fuzzes user-defined patterns too.
+func FuzzTransformCustomPatterns(f *testing.F) {
 	f.Add(`ORD-[0-9]{8}`, "mask")
 	f.Add(`\b\d{3}-\d{4}\b`, "hash")
 	f.Add(`abc`, "replace")

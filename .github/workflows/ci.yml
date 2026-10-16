@@ -66,6 +66,10 @@ jobs:
       - uses: actions/setup-go@v7
         with:
           go-version-file: go.mod
+      - name: Fuzz smoke (privacy transformation engine)
+        run: |
+          go test -count=1 ./internal/transform/ -fuzz=FuzzTransformContent -fuzztime=15s
+          go test -count=1 ./internal/transform/ -fuzz=FuzzTransformCustomPatterns -fuzztime=15s
       - name: gosec (security-oriented lint)
         run: |
           go install github.com/securego/gosec/v2/cmd/gosec@v2.29.0
