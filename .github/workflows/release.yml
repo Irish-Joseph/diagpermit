@@ -55,8 +55,9 @@ jobs:
           files: |
             dist/*
       - name: Set release name and notes
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          export GH_TOKEN="$GITHUB_TOKEN"
           TAG="${GITHUB_REF_NAME}"
           if [ -f "release-notes/$TAG.md" ]; then
             gh release edit "$TAG" --title "DiagPermit $TAG (Release Candidate)" --notes-file "release-notes/$TAG.md"
