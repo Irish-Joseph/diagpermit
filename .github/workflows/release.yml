@@ -49,5 +49,8 @@ jobs:
       - name: Publish
         uses: softprops/action-gh-release@v3
         with:
+          name: DiagPermit Release Candidate
+          draft: false
+          prerelease: true
           files: |
             dist/*
