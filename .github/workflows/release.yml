@@ -56,7 +56,7 @@ jobs:
             dist/*
       - name: Set release name and notes
         run: |
-          TAG="${GITHUB_REF_NAME#v}"
+          TAG="${GITHUB_REF_NAME}"
           if [ -f "release-notes/$TAG.md" ]; then
             gh release edit "$TAG" --name "DiagPermit $TAG (Release Candidate)" --notes-file "release-notes/$TAG.md"
           else
