@@ -54,3 +54,11 @@ jobs:
           prerelease: true
           files: |
             dist/*
+      - name: Set release name and notes
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          if [ -f "release-notes/$TAG.md" ]; then
+            gh release edit "$TAG" --name "DiagPermit $TAG (Release Candidate)" --notes-file "release-notes/$TAG.md"
+          else
+            echo "No release-notes/$TAG.md found; leaving default release notes."
+          fi
